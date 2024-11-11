@@ -6,7 +6,7 @@ public class UserLogin {
         String passWord;
         int userCount;
 
-        static int UserTotal{
+        static int UserTotal; {
             userCount = 0;
             userCount ++;
             // count the total usages of user class
