@@ -8,9 +8,9 @@ public class myJDBC {
         try {
             Connection connection = DriverManager.getConnection("jdbc:mysql://cis3270project.mysql.database.azure.com:3306/project3270", "username", "password123$");
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("Select * from name");
+            ResultSet resultSet = statement.executeQuery("Select * from people");
             while (resultSet.next()) {
-                System.out.println(resultSet.getString("Firstname"));
+                System.out.println(resultSet.getString("firstname"));
             }
         } catch (Exception e) {
             e.printStackTrace();

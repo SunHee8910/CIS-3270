@@ -1,4 +1,4 @@
-package org.example;
+/*package org.example;
 
 class Flight{
 
@@ -52,3 +52,4 @@ class Flight{
 
 
 }
+*/

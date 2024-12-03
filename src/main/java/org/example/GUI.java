@@ -1,4 +1,4 @@
-package org.example;
+/*package org.example;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -149,3 +149,5 @@ public class GUI extends Application implements EventHandler<ActionEvent> {
         return new Scene(root, 800, 800);
     }
 }
+
+ */

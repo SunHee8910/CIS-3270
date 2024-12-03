@@ -1,4 +1,4 @@
-package org.example;
+/*package org.example;
 // user login requirement class
 class Customer{
         private String customerName;
@@ -17,3 +17,4 @@ class Customer{
 
     }
 
+*/
