@@ -1,4 +1,5 @@
-/*package org.example;
+package org.example;
+import java.util.ArrayList;
 
 class Flight{
 
@@ -10,46 +11,52 @@ class Flight{
     private String arrivalTime = "Please select a arrival time";
     public boolean purchasedTicket = false;
     public int ticketsRemaining = 100;
-    public int ticketID = 0;
-    public static int flightsBooked;
-
+    public int [] ticketID = new int [100];
+    public static int flightsBooked = 0;
+    // default constructor
     Flight(){
         flightsBooked ++;
     }
-    // constructor for the flight object fully booked
-    Flight(String departureCity, String arrivalCity,
-                 String departureDate, String arrivalDate, String departureTime,String arrivalTime){
+    // setters and getters for all private fields
+    public String getDepartureCity() {
+        return departureCity;
+    }
+
+    public void setDepartureCity(String departureCity) {
         this.departureCity = departureCity;
+    }
+
+    public String getArrivalCity() {
+        return arrivalCity;
+    }
+
+    public void setArrivalCity(String arrivalCity) {
         this.arrivalCity = arrivalCity;
+    }
+
+    public String getDepartureDate() {
+        return departureDate;
+    }
+
+    public void setDepartureDate(String departureDate) {
         this.departureDate = departureDate;
+    }
+
+    public String getArrivalDate() {
+        return arrivalDate;
+    }
+
+    public void setArrivalDate(String arrivalDate) {
         this.arrivalDate = arrivalDate;
-        this.departureTime = departureTime;
+    }
+
+    public String getArrivalTime() {
+        return arrivalTime;
+    }
+
+    public void setArrivalTime(String arrivalTime) {
         this.arrivalTime = arrivalTime;
-
     }
-
-    // getter to see flight details
-    public String getFlightDetails(){
-        return departureCity
-    }
-
-    // setter to book flights
-    public void setBookedFlight(String departureCity, String arrivalCity,
-    String date, String flightTime){
-        if(!purchasedTicket){
-            purchasedTicket = true;
-            this.departureCity = departureCity;
-            this.arrivalCity = arrivalCity;
-            this.date = date;
-            this.flightTime = flightTime;
-
-        }
-        else{
-            System.out.println("This flight is already booked");
-        }
-    }
-
 
 
 }
-*/
