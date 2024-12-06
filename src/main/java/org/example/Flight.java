@@ -1,7 +1,7 @@
 package org.example;
 import java.util.ArrayList;
 
-class Flight{
+class Flight extends CodingLogic{
 
     private String departureCity = "Please select a departure city";
     private String arrivalCity = "Please select a arrival city";
@@ -11,11 +11,23 @@ class Flight{
     private String arrivalTime = "Please select a arrival time";
     public boolean purchasedTicket = false;
     public int ticketsRemaining = 100;
-    public int [] ticketID = new int [100];
+    public int ticketID = 0;
     public static int flightsBooked = 0;
+
     // default constructor
     Flight(){
         flightsBooked ++;
+    }
+    // constructor when user is ready to book entire flight
+    public Flight(String departureCity, String arrivalCity, String departureDate, String arrivalDate, String departureTime, String arrivalTime) {
+        generateFlightID(ticketID);
+        this.departureCity = departureCity;
+        this.arrivalCity = arrivalCity;
+        this.departureDate = departureDate;
+        this.arrivalDate = arrivalDate;
+        this.departureTime = departureTime;
+        this.arrivalTime = arrivalTime;
+        flightsBooked++;
     }
     // setters and getters for all private fields
     public String getDepartureCity() {
