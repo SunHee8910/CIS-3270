@@ -1,8 +1,9 @@
-/*package org.example;
+package org.example;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -40,6 +41,7 @@ public class GUI extends Application implements EventHandler<ActionEvent> {
         login = new Button("Login");
         login.setOnAction(this);
         VBox root = new VBox(50);
+        root.setPadding(new Insets(10));
         HBox layout = new HBox(10); // 10 pixels spacing between buttons
         Text text = new Text("✈️ Welcome to Flight Tracker ");
         text.setFont(Font.font("System", FontWeight.BOLD, 22));
@@ -85,6 +87,7 @@ public class GUI extends Application implements EventHandler<ActionEvent> {
         this.loginButton = new Button("Login");
         this.loginButton.setOnAction(this);
         VBox root = new VBox(5);
+        root.setPadding(new Insets(10));
 
         TextField usernameTextField = new TextField();
         PasswordField passwordTextField = new PasswordField();
@@ -107,6 +110,7 @@ public class GUI extends Application implements EventHandler<ActionEvent> {
         this.backButton = new Button("Back");
         backButton.setOnAction(this);
         VBox root = new VBox(5);
+        root.setPadding(new Insets(10));
         this.loginButton = new Button("Register");
         this.loginButton.setOnAction(this);
 
@@ -149,5 +153,3 @@ public class GUI extends Application implements EventHandler<ActionEvent> {
         return new Scene(root, 800, 800);
     }
 }
-
- */
