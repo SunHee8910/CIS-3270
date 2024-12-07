@@ -28,26 +28,35 @@ public class GUI extends Application {
         this.stage = primaryStage;
         primaryStage.setTitle("Flight Tracker");
 
+        Button login = new Button("Login");
         Button register = new Button("Register");
+        Button adminButton = new Button("Admin");
 
         register.setOnAction(e -> {
             this.stage.setScene(getRegisterScene());
         });
-        Button login = new Button("Login");
         login.setOnAction(e -> {
             this.stage.setScene(getLoginScene());
         });
+        adminButton.setOnAction(e -> {
+            this.stage.setScene(getAdminScreen());
+        });
 
-        VBox root = new VBox(50);
-        root.setPadding(new Insets(10));
-        HBox layout = new HBox(10); // 10 pixels spacing between buttons
-        Text text = new Text("✈️ Welcome to Flight Tracker ");
-        text.setFont(Font.font("System", FontWeight.BOLD, 22));
-        root.setAlignment(Pos.CENTER);
-        layout.setAlignment(Pos.CENTER); // Center the buttons
-        layout.getChildren().addAll(register, login);
-        root.getChildren().addAll(text, layout);
-        this.startScene = new Scene(root, 800, 800);
+        VBox vbox = new VBox(50);
+        vbox.setPadding(new Insets(10));
+        HBox hbox = new HBox(10); // 10 pixels spacing between buttons
+        Text header = new Text("✈️ Welcome to Flight Tracker ");
+
+        header.setFont(Font.font("System", FontWeight.BOLD, 22));
+        vbox.setAlignment(Pos.CENTER);
+        hbox.setAlignment(Pos.CENTER); // Center the buttons
+        hbox.getChildren().addAll(register, login);
+        VBox buttons = new VBox(5, hbox, adminButton);
+        buttons.setAlignment(Pos.CENTER);
+
+        vbox.getChildren().addAll(header, buttons);
+
+        this.startScene = new Scene(vbox, 800, 800);
         primaryStage.setScene(this.startScene);
         primaryStage.show();
 
@@ -76,6 +85,10 @@ public class GUI extends Application {
 
         Label signInError = new Label();
         errorMessages.add(signInError);
+
+        for (int i = 0; i < errorMessages.size(); i++) {
+            errorMessages.get(i).setManaged(false);
+        }
 
         loginButton.setOnAction(e -> {
             for (int i = 0; i < errorMessages.size(); i++) {
@@ -169,6 +182,10 @@ public class GUI extends Application {
         Label questionFieldError = new Label();
         errorMessages.add(questionFieldError);
 
+        for (int i = 0; i < errorMessages.size(); i++) {
+            errorMessages.get(i).setManaged(false);
+        }
+
         loginButton.setOnAction(event -> {
             for (int i = 0; i < errorMessages.size(); i++) {
                 errorMessages.get(i).setManaged(false);
@@ -256,6 +273,36 @@ public class GUI extends Application {
         scroll.setFitToWidth(true);
 
         return new Scene(scroll, 800, 800);
+    }
+
+    public Scene getAdminScreen() {
+        Text text = new Text("✈️ Admin Screen ");
+        text.setFont(Font.font("System", FontWeight.BOLD, 22));
+        Button backButton = new Button("Back");
+        backButton.setOnAction(e -> {
+            this.stage.setScene(this.startScene);
+        });
+        VBox root = new VBox(5);
+        root.setPadding(new Insets(10));
+        Button loginButton = new Button("Create Flight");
+        loginButton.setOnAction(e -> {
+        });
+        Button updateButton = new Button("Update Flight");
+        updateButton.setOnAction(e -> {
+        });
+        Button deleteButton = new Button("Delete Flight");
+        deleteButton.setOnAction(e -> {
+        });
+
+
+        root.getChildren().addAll(text, new VBox(5,
+                new Label("Create Flight"),
+                new Label("Update Flight"),
+                new Label("Delete Flight")
+        ), new HBox(5, backButton, loginButton));
+
+        return new Scene(root, 800, 800);
+
     }
 
 }
