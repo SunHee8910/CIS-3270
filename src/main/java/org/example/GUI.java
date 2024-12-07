@@ -1,31 +1,23 @@
 package org.example;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-public class GUI extends Application implements EventHandler<ActionEvent> {
+import java.util.ArrayList;
 
-    Button register;
-    Button login;
-    Button backButton;
-    Button loginButton;
+public class GUI extends Application {
+    Stage stage;
     Scene startScene;
-    String currentScene = "start";
 
     public static void main(String[] args) {
         launch(args);
@@ -33,13 +25,19 @@ public class GUI extends Application implements EventHandler<ActionEvent> {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        this.stage = primaryStage;
         primaryStage.setTitle("Flight Tracker");
 
-        register = new Button("Register");
-        register.setOnAction(this);
+        Button register = new Button("Register");
 
-        login = new Button("Login");
-        login.setOnAction(this);
+        register.setOnAction(e -> {
+            this.stage.setScene(getRegisterScene());
+        });
+        Button login = new Button("Login");
+        login.setOnAction(e -> {
+            this.stage.setScene(getLoginScene());
+        });
+
         VBox root = new VBox(50);
         root.setPadding(new Insets(10));
         HBox layout = new HBox(10); // 10 pixels spacing between buttons
@@ -52,104 +50,212 @@ public class GUI extends Application implements EventHandler<ActionEvent> {
         this.startScene = new Scene(root, 800, 800);
         primaryStage.setScene(this.startScene);
         primaryStage.show();
+
     }
-
-    @Override
-    public void handle(ActionEvent actionEvent) {
-        Node node = (Node) actionEvent.getSource();
-        Stage stage = (Stage) node.getScene().getWindow();
-
-        if (actionEvent.getSource() == register) {
-            stage.setScene(getRegisterScene());
-        }
-        if (actionEvent.getSource() == login) {
-            stage.setScene(getLoginScene());
-        }
-        if (actionEvent.getSource() == backButton) {
-            stage.setScene(this.startScene);
-        }
-        if (actionEvent.getSource() == loginButton) {
-            if (this.currentScene.equals("login")){
-                System.out.println("hit the login button on the login form");
-            } else if (this.currentScene.equals("register")){
-                System.out.println("hit the register button on the register form");
-            }
-        }
-    }
-
 
     public Scene getLoginScene() {
-        this.currentScene = "login";
         Text text = new Text("✈️ Login");
         text.setFont(Font.font("System", FontWeight.BOLD, 22));
-        this.backButton = new Button("Back");
-        this.backButton.setOnAction(this);
-        this.loginButton = new Button("Login");
-        this.loginButton.setOnAction(this);
+        Button backButton = new Button("Back");
+        backButton.setOnAction(e -> {
+            this.stage.setScene(this.startScene);
+        });
+        Button loginButton = new Button("Login");
         VBox root = new VBox(5);
         root.setPadding(new Insets(10));
 
+        ArrayList<Label> errorMessages = new ArrayList<>();
+
         TextField usernameTextField = new TextField();
+        Label usernameError = new Label();
+        errorMessages.add(usernameError);
+
         PasswordField passwordTextField = new PasswordField();
+        Label passwordError = new Label();
+        errorMessages.add(passwordError);
+
+        Label signInError = new Label();
+        errorMessages.add(signInError);
+
+        loginButton.setOnAction(e -> {
+            for (int i = 0; i < errorMessages.size(); i++) {
+                errorMessages.get(i).setText("");
+                errorMessages.get(i).setManaged(false);
+                errorMessages.get(i).setTextFill(Color.RED);
+            }
+            String enteredUsername = usernameTextField.getText();
+            String enteredPassword = passwordTextField.getText();
+
+            if (enteredUsername.isBlank()) {
+                usernameError.setText("Username is required");
+            }
+            if (enteredPassword.isBlank()) {
+                passwordError.setText("Password is required");
+            }
+
+            boolean successfulLogin = false;
+            if (usernameError.getText().isBlank() && passwordError.getText().isBlank() && !successfulLogin) {
+                signInError.setText("Invalid username or password");
+            }
+
+            for (int i = 0; i < errorMessages.size(); i++) {
+                if (!errorMessages.get(i).getText().isBlank()) {
+                    errorMessages.get(i).setManaged(true);
+                }
+            }
+        });
 
 
         root.getChildren().addAll(
                 text,
-                new Label("Username"),
-                usernameTextField,
-                new Label("Password"),
-                passwordTextField,
-                new HBox(5, this.backButton, this.loginButton));
+                new Label("Username"), usernameTextField, usernameError,
+                new Label("Password"), passwordTextField, passwordError,
+                signInError,
+                new HBox(5, backButton, loginButton));
         return new Scene(root, 800, 800);
     }
 
     public Scene getRegisterScene() {
-        this.currentScene = "register";
         Text text = new Text("✈️ Register ");
+        ArrayList<Label> errorMessages = new ArrayList<>();
         text.setFont(Font.font("System", FontWeight.BOLD, 22));
-        this.backButton = new Button("Back");
-        backButton.setOnAction(this);
+
+        Button backButton = new Button("Back");
+        backButton.setOnAction(e -> {
+            this.stage.setScene(this.startScene);
+        });
+
         VBox root = new VBox(5);
         root.setPadding(new Insets(10));
-        this.loginButton = new Button("Register");
-        this.loginButton.setOnAction(this);
-
+        Button loginButton = new Button("Register");
 
         TextField firstNameField = new TextField();
+        Label firstNameError = new Label();
+        errorMessages.add(firstNameError);
+
         TextField lastNameField = new TextField();
+        Label lastNameError = new Label();
+        errorMessages.add(lastNameError);
+
         TextField addressField = new TextField();
+        Label addressFieldError = new Label();
+        errorMessages.add(addressFieldError);
+
         TextField zipField = new TextField();
+        Label zipFieldError = new Label();
+        errorMessages.add(zipFieldError);
+
         TextField stateField = new TextField();
+        Label stateFieldError = new Label();
+        errorMessages.add(stateFieldError);
+
         TextField usernameTextField = new TextField();
+        Label usernameTextFieldError = new Label();
+        errorMessages.add(usernameTextFieldError);
+
         TextField passwordField = new PasswordField();
+        Label passwordFieldError = new Label();
+        errorMessages.add(passwordFieldError);
+
         TextField emailField = new TextField();
+        Label emailFieldError = new Label();
+        errorMessages.add(emailFieldError);
+
         TextField ssnField = new TextField();
+        Label ssnFieldError = new Label();
+        errorMessages.add(ssnFieldError);
+
         TextField questionField = new TextField();
+        Label questionFieldError = new Label();
+        errorMessages.add(questionFieldError);
+
+        loginButton.setOnAction(event -> {
+            for (int i = 0; i < errorMessages.size(); i++) {
+                errorMessages.get(i).setManaged(false);
+                errorMessages.get(i).setTextFill(Color.RED);
+                errorMessages.get(i).setText("");
+            }
+            String firstName = firstNameField.getText();
+            String lastName = lastNameField.getText();
+            String address = addressField.getText();
+            String zip = zipField.getText();
+            String state = stateField.getText();
+            String username = usernameTextField.getText();
+            String password = passwordField.getText();
+            String email = emailField.getText();
+            String ssn = ssnField.getText();
+            String question = questionField.getText();
+
+            // start validating content
+            if (firstName.isBlank()) {
+                firstNameError.setText("First name is required");
+            }
+            if (lastName.isBlank()) {
+                lastNameError.setText("Last name is required");
+            }
+            if (address.isBlank()) {
+                addressFieldError.setText("Address is required");
+            }
+            if (zip.isBlank()) {
+                zipFieldError.setText("Zip is required");
+            }
+            if (state.isBlank()) {
+                stateFieldError.setText("State is required");
+            }
+            if (username.isBlank()) {
+                usernameTextFieldError.setText("Username is required");
+            }
+            // check username is unique
+            boolean usernameIsTaken = false;
+            if (usernameIsTaken) {
+                usernameTextFieldError.setText("This username is taken, please enter a unique username");
+            }
+            if (password.isBlank()) {
+                passwordFieldError.setText("Password is required");
+            }
+            if (email.isBlank()) {
+                emailFieldError.setText("Email is required");
+            }
+            if (!email.isBlank() && !email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+                emailFieldError.setText("Email address must be in \"user@mail.com\" format");
+            }
+            if (ssn.isBlank()) {
+                ssnFieldError.setText("SSN is required");
+            }
+            if (question.isBlank()) {
+                questionFieldError.setText("Question is required");
+            }
+
+            for (int i = 0; i < errorMessages.size(); i++) {
+                if (!errorMessages.get(i).getText().isBlank()) {
+                    errorMessages.get(i).setManaged(true);
+                }
+            }
+        });
 
 
-        root.getChildren().addAll(text, new VBox(5,
-                new Label("First Name"),
-                firstNameField,
-                new Label("Last Name"),
-                lastNameField,
-                new Label("Address"),
-                addressField,
-                new Label("Zip Code"),
-                zipField,
-                new Label("State"),
-                stateField,
-                new Label("Username"),
-                usernameTextField,
-                new Label("Password"),
-                passwordField,
-                new Label("Email Address"),
-                emailField,
-                new Label("SSN"),
-                ssnField,
-                new Label("Recovery Answer"),
-                questionField
-                ), new HBox(5, this.backButton, this.loginButton));
+        root.getChildren().addAll(
+                text,
+                new VBox(10,
+                        new VBox(new Label("First Name"), firstNameField, firstNameError),
+                        new VBox(new Label("Last Name"), lastNameField, lastNameError),
+                        new VBox(new Label("Address"), addressField, addressFieldError),
+                        new VBox(new Label("Zip Code"), zipField, zipFieldError),
+                        new VBox(new Label("State"), stateField, stateFieldError),
+                        new VBox(new Label("Username"), usernameTextField, usernameTextFieldError),
+                        new VBox(new Label("Password"), passwordField, passwordFieldError),
+                        new VBox(new Label("Email Address"), emailField, emailFieldError),
+                        new VBox(new Label("SSN"), ssnField, ssnFieldError),
+                        new VBox(new Label("Recovery Answer"), questionField, questionFieldError),
+                        new VBox(new HBox(5, backButton, loginButton))
+                )
+        );
 
-        return new Scene(root, 800, 800);
+        ScrollPane scroll = new ScrollPane(root);
+        scroll.setFitToHeight(true);
+        scroll.setFitToWidth(true);
+
+        return new Scene(scroll, 800, 800);
     }
+
 }
