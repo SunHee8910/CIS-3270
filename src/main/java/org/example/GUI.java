@@ -148,8 +148,35 @@ public class GUI extends Application implements EventHandler<ActionEvent> {
                 ssnField,
                 new Label("Recovery Answer"),
                 questionField
-                ), new HBox(5, this.backButton, this.loginButton));
+        ), new HBox(5, this.backButton, this.loginButton));
 
         return new Scene(root, 800, 800);
     }
+        public Scene getAdminScreen() {
+            this.currentScene = "admin";
+            Text text = new Text("✈️ Admin Screen ");
+            text.setFont(Font.font("System", FontWeight.BOLD, 22));
+            this.backButton = new Button("Back");
+            backButton.setOnAction(this);
+            VBox root = new VBox(5);
+            root.setPadding(new Insets(10));
+            this.loginButton = new Button("Create Flight");
+            this.loginButton.setOnAction(this);
+            this.loginButton = new Button("Update Flight");
+            this.loginButton.setOnAction(this);
+            this.loginButton = new Button("Delete Flight");
+            this.loginButton.setOnAction(this);
+
+
+            root.getChildren().addAll(text, new VBox(5,
+                    new Label("Create Flight"),
+                    new Label("Update Flight"),
+                    new Label("Delete Flight")
+            ), new HBox(5, this.backButton, this.loginButton));
+
+            return new Scene(root, 800, 800);
+
+        }
+
+
 }
