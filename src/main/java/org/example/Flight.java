@@ -19,8 +19,8 @@ class Flight extends CodingLogic{
         flightsBooked ++;
     }
     // constructor when user is ready to book entire flight
-    public Flight(String departureCity, String arrivalCity, String departureDate, String arrivalDate, String departureTime, String arrivalTime) {
-        generateFlightID(ticketID);
+    Flight(String departureCity, String arrivalCity, String departureDate, String arrivalDate, String departureTime, String arrivalTime) {
+        this.ticketID = CodingLogic.generateFlightID(this.ticketID);
         this.departureCity = departureCity;
         this.arrivalCity = arrivalCity;
         this.departureDate = departureDate;
@@ -49,7 +49,7 @@ class Flight extends CodingLogic{
     public String getDepartureDate() {
         return departureDate;
     }
-
+//
     public void setDepartureDate(String departureDate) {
         this.departureDate = departureDate;
     }
@@ -70,5 +70,15 @@ class Flight extends CodingLogic{
         this.arrivalTime = arrivalTime;
     }
 
+    public int getTicketID(){
+        return ticketID;
+    }
+/*
+    public static void main(String[] args) {
+        Flight newFlight = new Flight("test","test2", "test3", "test4", "test5", "test6");
+        System.out.println(        newFlight.getTicketID());
+    }
+    test main method to ensure the initalization of a newflight instance would have a randomly generated number through the coding logic method.
+ */
 
 }
