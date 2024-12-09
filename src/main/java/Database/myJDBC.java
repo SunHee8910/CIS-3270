@@ -6,17 +6,17 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 public class myJDBC {
-    public static void main(String[] args) {
+    public static Connection getConnection() {
+        Connection connection = null;
         try {
-            Connection connection = DriverManager.getConnection("jdbc:mysql://cis3270project.mysql.database.azure.com:3306/project3270", "username", "password123$");
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("Select * from people");
-            while (resultSet.next()) {
-                System.out.println(resultSet.getString("firstname"));
-            }
+            connection = DriverManager.getConnection(
+                    "jdbc:mysql://cis3270project.mysql.database.azure.com:3306/project3270",
+                    "username",
+                    "password123$"
+            );
         } catch (Exception e) {
-            e.printStackTrace();
-
+            System.out.println("Cannot connect to the database: " + e.getMessage());
         }
+        return connection;
     }
 }

@@ -282,26 +282,77 @@ public class GUI extends Application {
         backButton.setOnAction(e -> {
             this.stage.setScene(this.startScene);
         });
+        Button loginButton = new Button("Login");
         VBox root = new VBox(5);
         root.setPadding(new Insets(10));
-        Button loginButton = new Button("Create Flight");
+
+        ArrayList<Label> errorMessages = new ArrayList<>();
+
+        TextField usernameTextField = new TextField();
+        Label usernameError = new Label();
+        errorMessages.add(usernameError);
+
+        PasswordField passwordTextField = new PasswordField();
+        Label passwordError = new Label();
+        errorMessages.add(passwordError);
+
+        PasswordField admincodeTextField = new PasswordField();
+        Label admincodeError = new Label();
+        errorMessages.add(admincodeError);
+
+        Label signInError = new Label();
+        errorMessages.add(signInError);
+
+        for (int i = 0; i < errorMessages.size(); i++) {
+            errorMessages.get(i).setManaged(false);
+        }
+
         loginButton.setOnAction(e -> {
-        });
-        Button updateButton = new Button("Update Flight");
-        updateButton.setOnAction(e -> {
-        });
-        Button deleteButton = new Button("Delete Flight");
-        deleteButton.setOnAction(e -> {
+            for (int i = 0; i < errorMessages.size(); i++) {
+                errorMessages.get(i).setText("");
+                errorMessages.get(i).setManaged(false);
+                errorMessages.get(i).setTextFill(Color.RED);
+            }
+            String enteredUsername = usernameTextField.getText();
+            String enteredPassword = passwordTextField.getText();
+            String adminCode = admincodeTextField.getText();
+
+            if (enteredUsername.isBlank()) {
+                usernameError.setText("Username is required");
+            }
+            if (enteredPassword.isBlank()) {
+                passwordError.setText("Password is required");
+            }
+            if (adminCode.isBlank()) {
+                admincodeError.setText("Admin code is required");
+            }
+
+            boolean successfulLogin = false;
+            if (usernameError.getText().isBlank() && passwordError.getText().isBlank() && admincodeError.getText().isBlank() && !successfulLogin) {
+                signInError.setText("Invalid username, password or Admin code");
+            }
+
+            for (int i = 0; i < errorMessages.size(); i++) {
+                if (!errorMessages.get(i).getText().isBlank()) {
+                    errorMessages.get(i).setManaged(true);
+                }
+            }
         });
 
 
-        root.getChildren().addAll(text, new VBox(5,
-                new Label("Create Flight"),
-                new Label("Update Flight"),
-                new Label("Delete Flight")
-        ), new HBox(5, backButton, loginButton));
+        root.getChildren().addAll(
+                text,
+                new VBox(5,
+                        new VBox (new Label("Username"), usernameTextField, usernameError),
+                        new VBox (new Label("Password"), passwordTextField, passwordError),
+                        new VBox (new Label("Admin Code"), admincodeTextField, admincodeError),
+                        signInError,
+                new HBox(5, backButton, loginButton)));
 
         return new Scene(root, 800, 800);
+
+
+
 
     }
 
