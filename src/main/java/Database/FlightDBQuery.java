@@ -1,15 +1,18 @@
 package Database;
+import Database.myJDBC;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.example.*;
-
+import org.example.Flight;
+import static Database.myJDBC.getConnection;
 public class FlightDBQuery {
 
     public static void addFlight(Flight flight) {
-        connection = myJDBC.getConnection();
+        Connection connection = null;
+
+        connection = getConnection();
         Statement statement = null;
 
         try {
