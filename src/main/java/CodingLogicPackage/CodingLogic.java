@@ -1,4 +1,4 @@
-package org.example;
+package CodingLogicPackage;
 import java.util.Random;
 import java.util.ArrayList;
 /*

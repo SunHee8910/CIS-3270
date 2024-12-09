@@ -1,6 +1,6 @@
 package org.example;
 import java.util.ArrayList;
-import org.example.CodingLogic;
+import CodingLogicPackage.CodingLogic;
 class Flight{
     private static ArrayList<Integer> bookedFlightIDs = new ArrayList<>();
     private String departureCity = "Please select a departure city";
