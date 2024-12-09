@@ -1,17 +1,17 @@
 package org.example;
 import java.util.ArrayList;
-
-class Flight extends CodingLogic{
-
+import org.example.CodingLogic;
+class Flight{
+    private static ArrayList<Integer> bookedFlightIDs = new ArrayList<>();
     private String departureCity = "Please select a departure city";
     private String arrivalCity = "Please select a arrival city";
     private String departureDate = "Please select a departure date";
     private String arrivalDate = "Please select a arrival date";
     public String departureTime = "Please select a departure time";
     private String arrivalTime = "Please select a arrival time";
-    public boolean purchasedTicket = false;
-    public int ticketsRemaining = 100;
-    public int ticketID = 0;
+    private boolean purchasedTicket = false;
+    private int ticketsRemaining = 100;
+    private int ticketID = 0;
     public static int flightsBooked = 0;
 
     // default constructor
@@ -21,6 +21,7 @@ class Flight extends CodingLogic{
     // constructor when user is ready to book entire flight
     Flight(String departureCity, String arrivalCity, String departureDate, String arrivalDate, String departureTime, String arrivalTime) {
         this.ticketID = CodingLogic.generateFlightID(this.ticketID);
+        this.purchasedTicket = true;
         this.departureCity = departureCity;
         this.arrivalCity = arrivalCity;
         this.departureDate = departureDate;
@@ -30,6 +31,19 @@ class Flight extends CodingLogic{
         flightsBooked++;
     }
     // setters and getters for all private fields
+    public boolean hasPurchasedTicket() {
+        return purchasedTicket;
+    }
+    public void setPurchasedTicket(boolean purchasedTicket) {
+        this.purchasedTicket = purchasedTicket;
+    }
+    public int getTicketsRemaining() {
+        return ticketsRemaining;
+    }
+    public void setTicketsRemaining(int ticketsRemaining) {
+        this.ticketsRemaining = ticketsRemaining;
+    }
+
     public String getDepartureCity() {
         return departureCity;
     }
