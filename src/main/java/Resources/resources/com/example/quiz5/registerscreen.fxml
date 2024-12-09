@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="CodingLogicPackage.ButtonControl" alignment="CENTER" spacing="50" padding="10">
+    <ScrollPane fitToHeight="true" fitToWidth="true">
+        <VBox alignment="CENTER" spacing="5" padding="10">
+            <Text text="✈️ Register" font="System Bold 24"/>
+            <VBox spacing="10">
+                <VBox>
+                    <Label text="First Name"/>
+                    <TextField fx:id="firstNameField"/>
+                    <Label fx:id="firstNameError" managed="false"/>
+                </VBox>
+                <VBox>
+                    <Label text="Last Name"/>
+                    <TextField fx:id="lastNameField"/>
+                    <Label fx:id="lastNameError" managed="false"/>
+                </VBox>
+                <VBox>
+                    <Label text="Address"/>
+                    <TextField fx:id="addressField"/>
+                    <Label fx:id="addressFieldError" managed="false"/>
+                </VBox>
+                <VBox>
+                    <Label text="Zip Code"/>
+                    <TextField fx:id="zipField"/>
+                    <Label fx:id="zipFieldError" managed="false"/>
+                </VBox>
+                <VBox>
+                    <Label text="State"/>
+                    <TextField fx:id="stateField"/>
+                    <Label fx:id="stateFieldError" managed="false"/>
+                </VBox>
+                <VBox>
+                    <Label text="Username"/>
+                    <TextField fx:id="usernameTextField"/>
+                    <Label fx:id="usernameTextFieldError" managed="false"/>
+                </VBox>
+                <VBox>
+                    <Label text="Password"/>
+                    <PasswordField fx:id="passwordField"/>
+                    <Label fx:id="passwordFieldError" managed="false"/>
+                </VBox>
+                <VBox>
+                    <Label text="Email Address"/>
+                    <TextField fx:id="emailField"/>
+                    <Label fx:id="emailFieldError" managed="false"/>
+                </VBox>
+                <VBox>
+                    <Label text="SSN"/>
+                    <TextField fx:id="ssnField"/>
+                    <Label fx:id="ssnFieldError" managed="false"/>
+                </VBox>
+                <VBox>
+                    <Label text="Recovery Answer"/>
+                    <TextField fx:id="questionField"/>
+                    <Label fx:id="questionFieldError" managed="false"/>
+                </VBox>
+                <HBox spacing="5">
+                    <Button text="Back" onAction="#onBackButton"/>
+                    <Button text="Register" onAction="#onRegisterButton"/>
+                </HBox>
+            </VBox>
+        </VBox>
+    </ScrollPane>
+</VBox>

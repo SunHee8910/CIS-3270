@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="CodingLogicPackage.ButtonControl" alignment="CENTER" spacing="50" padding="10">
+    <Text text="✈️ Admin Screen" font="System Bold 24"/>
+    <ScrollPane fitToHeight="true" fitToWidth="true">
+        <VBox spacing="5">
+            <Label text="Create Flight"/>
+            <Label text="Update Flight"/>
+            <Label text="Delete Flight"/>
+            <HBox spacing="5">
+                <Button text="Back" onAction="#onBackButton"/>
+                <Button text="Create Flight" onAction="#onCreateFlightButton"/>
+                <Button text="Update Flight" onAction="#onUpdateFlightButton"/>
+                <Button text="Delete Flight" onAction="#onDeleteFlightButton"/>
+            </HBox>
+        </VBox>
+    </ScrollPane>
+</VBox>

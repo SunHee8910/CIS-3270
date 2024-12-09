@@ -20,7 +20,7 @@ public class GUI extends Application {
     Scene startScene;
 
     public static void main(String[] args) {
-        launch(args);
+        launch();
     }
 
     @Override

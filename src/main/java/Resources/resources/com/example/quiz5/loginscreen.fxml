@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+
+
+<!-- Login Scene -->
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="CodingLogicPackage.ButtonControl" alignment="CENTER" spacing="50" padding="10">
+    <ScrollPane fitToHeight="true" fitToWidth="true">
+    <Text text="✈️ Login" font="System Bold 24"/>
+    <Label text="Username"/>
+    <TextField fx:id="usernameTextFiel"/>
+    <Label fx:id="usernameError" managed="false"/>
+    <Label text="Password"/>
+    <PasswordField fx:id="passwordTextField"/>
+    <Label fx:id="passwordError" managed="false"/>
+    <Label fx:id="signInError" managed="false"/>
+    <HBox spacing="5">
+        <Button text="Back" onAction="#onBackButton"/>
+        <Button text="Login" onAction="#onLoginButton"/>
+    </HBox>
+    </ScrollPane>
+</VBox>
