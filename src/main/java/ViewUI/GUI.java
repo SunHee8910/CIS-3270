@@ -1,5 +1,6 @@
 package ViewUI;
 
+import Database.myJDBC;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -13,7 +14,15 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
+
+import Database.FlightDBQuery.*;
+import org.example.Flight;
+
+import static CodingLogicPackage.CodingLogic.generateFlightID;
 
 public class GUI extends Application {
     Stage stage;
@@ -39,7 +48,7 @@ public class GUI extends Application {
             this.stage.setScene(getLoginScene());
         });
         adminButton.setOnAction(e -> {
-            this.stage.setScene(getAdminScreen());
+            this.stage.setScene(getAdminLogin());
         });
 
         VBox vbox = new VBox(50);
@@ -275,7 +284,7 @@ public class GUI extends Application {
         return new Scene(scroll, 800, 800);
     }
 
-    public Scene getAdminScreen() {
+    public Scene getAdminLogin() {
         Text text = new Text("✈️ Admin Screen ");
         text.setFont(Font.font("System", FontWeight.BOLD, 22));
         Button backButton = new Button("Back");
@@ -307,7 +316,7 @@ public class GUI extends Application {
             errorMessages.get(i).setManaged(false);
         }
 
-        loginButton.setOnAction(e -> {
+        loginButton.setOnAction(event -> {
             for (int i = 0; i < errorMessages.size(); i++) {
                 errorMessages.get(i).setText("");
                 errorMessages.get(i).setManaged(false);
@@ -337,23 +346,216 @@ public class GUI extends Application {
                     errorMessages.get(i).setManaged(true);
                 }
             }
+            try {
+                Connection connection = myJDBC.getConnection();
+                Statement statement = connection.createStatement();
+
+                ResultSet resultSet = statement.executeQuery("Select" + passwordTextField.getText() + "from users where username = " + usernameTextField.getText());
+                if (resultSet.next()) {
+                    this.stage.setScene(getAdminScreen());
+                } else {
+                    this.stage.setScene(getAdminLogin());
+                    new Label("Invalid username or password");
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         });
 
 
         root.getChildren().addAll(
                 text,
                 new VBox(5,
-                        new VBox (new Label("Username"), usernameTextField, usernameError),
-                        new VBox (new Label("Password"), passwordTextField, passwordError),
-                        new VBox (new Label("Admin Code"), admincodeTextField, admincodeError),
+                        new VBox(new Label("Username"), usernameTextField, usernameError),
+                        new VBox(new Label("Password"), passwordTextField, passwordError),
+                        new VBox(new Label("Admin Code"), admincodeTextField, admincodeError),
                         signInError,
-                new HBox(5, backButton, loginButton)));
+                        new HBox(5, backButton, loginButton)));
 
         return new Scene(root, 800, 800);
 
 
-
-
     }
 
+    public Scene getAdminScreen() {
+        Text text = new Text("✈️ Admin Screen ");
+        text.setFont(Font.font("System", FontWeight.BOLD, 22));
+        Button backButton = new Button("Back");
+        backButton.setOnAction(e -> {
+            this.stage.setScene(this.startScene);
+        });
+        Button createFlight = new Button("Create Flight");
+        createFlight.setOnAction(e -> {
+            this.stage.setScene(getCreateFlight());
+        });
+        Button deleteFlight = new Button("Delete Flight");
+        deleteFlight.setOnAction(e -> {
+            this.stage.setScene(getDeleteFlight());
+        });
+        Button updateFlight = new Button("Update Flight");
+        updateFlight.setOnAction(e -> {
+            this.stage.setScene(getUpdateFlight());
+        });
+        VBox root = new VBox(5);
+        root.setPadding(new Insets(10));
+        root.getChildren().addAll(
+                text,
+                new VBox(5,
+                        createFlight,
+                        deleteFlight,
+                        updateFlight,
+                        backButton
+                )
+        );
+        return new Scene(root, 800, 800);
+    }
+    public Scene getCreateFlight(){
+        Text text = new Text("✈️ Create Flight ");
+        text.setFont(Font.font("System", FontWeight.BOLD, 22));
+        Button backButton = new Button("Back");
+        backButton.setOnAction(e -> {
+            this.stage.setScene(this.startScene);
+        });
+        TextField flightNumber = new TextField();
+        TextField departureCity = new TextField();
+        TextField arrivalCity = new TextField();
+        TextField departureDate = new TextField();
+        TextField arrivalDate = new TextField();
+        TextField departureTime = new TextField();
+        TextField arrivalTime = new TextField();
+        TextField ticketID = new TextField();
+        TextField ticketPrice = new TextField();
+
+        Button createFlight = new Button("Create Flight");
+        createFlight.setOnAction(e -> {
+            String flightNumbers = String.valueOf(generateFlightID(Integer.parseInt(flightNumber.getText())));
+            try {
+                Connection connection = myJDBC.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery("INSERT INTO flights (flightNumber, departureCity, arrivalCity, departureDate, arrivalDate, departureTime, arrivalTime, ticketID, ticketPrice) VALUES (" + flightNumbers + ", " + departureCity.getText() + ", " + arrivalCity.getText() + ", " + departureDate.getText() + ", " + arrivalDate.getText() + ", " + departureTime.getText() + ", " + arrivalTime.getText() + ", " + ticketID.getText() + ", " + ticketPrice.getText() + ")");
+            }
+            catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        VBox root = new VBox(5);
+        root.setPadding(new Insets(10));
+        root.getChildren().addAll(
+                text,
+                new VBox(5,
+                        new VBox (new Label("Flight Number"), flightNumber),
+                        new VBox (new Label("Departure City"), departureCity),
+                        new VBox (new Label("Arrival City"), arrivalCity),
+                        new VBox (new Label("Departure Date"), departureDate),
+                        new VBox (new Label("Arrival Date"), arrivalDate),
+                        new VBox (new Label("Departure Time"), departureTime),
+                        new VBox (new Label("Arrival Time"), arrivalTime),
+                        new VBox (new Label("Ticket ID"), ticketID),
+                        new VBox (new Label("Ticket Price"), ticketPrice),
+                        createFlight,
+                        backButton
+                )
+        );
+        return new Scene(root, 800, 800);
+    }
+    public Scene getDeleteFlight(){
+        Text text = new Text("✈️ Delete Flight ");
+        text.setFont(Font.font("System", FontWeight.BOLD, 22));
+        Button backButton = new Button("Back");
+        backButton.setOnAction(e -> {
+            this.stage.setScene(this.startScene);
+        });
+        TextField flightNumber = new TextField();
+        Button deleteFlight = new Button("Delete Flight");
+        deleteFlight.setOnAction(e -> {
+            try {
+                Connection connection = myJDBC.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery("DELETE FROM flights WHERE flightNumber = " + flightNumber.getText());
+            }
+            catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        VBox root = new VBox(5);
+        root.setPadding(new Insets(10));
+        root.getChildren().addAll(
+                text,
+                new VBox(5,
+                        new VBox (new Label("Flight Number"), flightNumber),
+                        deleteFlight,
+                        backButton
+                )
+        );
+        return new Scene(root, 800, 800);
+    }
+    public Scene getUpdateFlight(){
+        Text text = new Text("✈️ Update Flight ");
+        text.setFont(Font.font("System", FontWeight.BOLD, 22));
+        Button backButton = new Button("Back");
+        backButton.setOnAction(e -> {
+            this.stage.setScene(this.startScene);
+        });
+        TextField flightNumber = new TextField();
+        TextField departureCity = new TextField();
+        TextField arrivalCity = new TextField();
+        TextField departureDate = new TextField();
+        TextField arrivalDate = new TextField();
+        TextField departureTime = new TextField();
+        TextField arrivalTime = new TextField();
+        TextField ticketID = new TextField();
+        TextField ticketPrice = new TextField();
+
+        Button updateFlight = new Button("Update Flight");
+        updateFlight.setOnAction(e -> {
+            try{
+                Connection connection = myJDBC.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultset = statement.executeQuery("SELECT * FROM flights WHERE flightNumber = " + flightNumber.getText());
+                if (resultset.next()){
+                    try {
+                        Connection connection1 = myJDBC.getConnection();
+                        Statement statement1 = connection.createStatement();
+                        ResultSet resultSet = statement.executeQuery("UPDATE flights SET departureCity = " + departureCity.getText() + ", arrivalCity = " + arrivalCity.getText() + ", departureDate = " + departureDate.getText() + ", arrivalDate = " + arrivalDate.getText() + ", departureTime = " + departureTime.getText() + ", arrivalTime = " + arrivalTime.getText() + ", ticketID = " + ticketID.getText() + ", ticketPrice = " + ticketPrice.getText() + " WHERE flightNumber = " + flightNumber.getText());
+                    }
+                    catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+                else{
+                    new Label("Flight does not exist");
+                }
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+
+
+        });
+        VBox root = new VBox(5);
+        root.setPadding(new Insets(10));
+        root.getChildren().addAll(
+                text,
+                new VBox(5,
+                        new VBox (new Label("Flight Number"), flightNumber),
+                        new VBox (new Label("Departure City"), departureCity),
+                        new VBox (new Label("Arrival City"), arrivalCity),
+                        new VBox (new Label("Departure Date"), departureDate),
+                        new VBox (new Label("Arrival Date"), arrivalDate),
+                        new VBox (new Label("Departure Time"), departureTime),
+                        new VBox (new Label("Arrival Time"), arrivalTime),
+                        new VBox (new Label("Ticket ID"), ticketID),
+                        new VBox (new Label("Ticket Price"), ticketPrice),
+                        updateFlight,
+                        backButton
+                )
+        );
+        return new Scene(root, 800, 800);
+    }
 }
+
+
+
+
+
+
+

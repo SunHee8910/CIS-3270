@@ -15,11 +15,11 @@ public class Flight{
     public static int flightsBooked = 0;
 
     // default constructor
-    Flight(){
+    public Flight(){
         flightsBooked ++;
     }
     // constructor when user is ready to book entire flight
-    Flight(String departureCity, String arrivalCity, String departureDate, String arrivalDate, String departureTime, String arrivalTime) {
+    public Flight(String departureCity, String arrivalCity, String departureDate, String arrivalDate, String departureTime, String arrivalTime) {
         this.ticketID = CodingLogic.generateFlightID(this.ticketID);
         this.purchasedTicket = true;
         this.departureCity = departureCity;
