@@ -130,7 +130,7 @@ public class GUI extends Application {
                 Connection connection = myJDBC.getConnection();
                 Statement statement = connection.createStatement();
 
-                ResultSet resultSet = statement.executeQuery("Select * from users where username = " + usernameTextField.getText() + "and password = " + passwordTextField.getText());
+                ResultSet resultSet = statement.executeQuery("Select * from customers where customerName = '" + usernameTextField.getText() + "' and password = '" + passwordTextField.getText() + "'");
                 if (resultSet.next()) {
                     this.stage.setScene(getUserScreen());
                 } else {
@@ -191,7 +191,7 @@ public class GUI extends Application {
         text.setFont(Font.font("System", FontWeight.BOLD, 22));
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
-            this.stage.setScene(this.startScene);
+            this.stage.setScene(this.getUserScreen());
         });
         TextField departureCity = new TextField();
         TextField arrivalCity = new TextField();
@@ -200,16 +200,29 @@ public class GUI extends Application {
         TextField departureTime = new TextField();
         TextField arrivalTime = new TextField();
         Button searchFlights = new Button("Search Flights");
+        Label resultlist = new Label();
+        Button book = new Button();
         searchFlights.setOnAction(e -> {
 
             try {
                 Connection connection = myJDBC.getConnection();
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery("SELECT * FROM flights WHERE departureCity LIKE '%" + departureCity.getText() + "%' AND arrivalCity LIKE '%" + arrivalCity.getText() + "%' AND departureDate LIKE '%" + departureDate.getText() + "%' AND arrivalDate LIKE '%" + arrivalDate.getText() + "%' AND departureTime LIKE '%" + departureTime.getText() + "%' AND arrivalTime LIKE '%" + arrivalTime.getText() + "%'");
+                StringBuilder results = new StringBuilder();
+                while (resultSet.next()) {
+                    results.append((resultSet.getString("flightNumber") + " " + resultSet.getString("departureCity") + " " + resultSet.getString("arrivalCity") + " " + resultSet.getString("departureDate") + " " + resultSet.getString("arrivalDate") + " " + resultSet.getString("departureTime") + " " + resultSet.getString("arrivalTime") + " " + resultSet.getString("ticketID") + " " + resultSet.getString("ticketPrice")));
+
+                }
+                resultlist.setText(results.toString());
             }
             catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
+        });
+        book.setOnAction(b ->{
+
+
+
         });
         VBox root = new VBox(5);
         root.setPadding(new Insets(10));
@@ -239,26 +252,25 @@ public class GUI extends Application {
         text.setFont(Font.font("System", FontWeight.BOLD, 22));
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
-            this.stage.setScene(this.startScene);
+            this.stage.setScene(this.getUserScreen());
         });
-        TextField username = new TextField();
         Button viewFlights = new Button("View Flights");
         viewFlights.setOnAction(e -> {
-            try {
-                Connection connection = myJDBC.getConnection();
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery("SELECT * FROM flights WHERE username = " + username.getText());
-            }
-            catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
+//            try {
+//                Connection connection = myJDBC.getConnection();
+//                Statement statement = connection.createStatement();
+//                ResultSet resultSet = statement.executeQuery("SELECT * FROM flights WHERE username = '" + username.getText() + "'");
+//            }
+//            catch (Exception ex) {
+//                throw new RuntimeException(ex);
+//            }
         });
         VBox root = new VBox(5);
         root.setPadding(new Insets(10));
         root.getChildren().addAll(
                 text,
                 new VBox(5,
-                        new VBox (new Label("Username"), username),
+                      //  new VBox (new Label("Username"), username),
                         viewFlights,
                         backButton
                 )
@@ -564,7 +576,7 @@ public class GUI extends Application {
         text.setFont(Font.font("System", FontWeight.BOLD, 22));
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
-            this.stage.setScene(this.startScene);
+            this.stage.setScene(this.getAdminScreen());
         });
         TextField flightNumber = new TextField();
         TextField departureCity = new TextField();
@@ -573,7 +585,7 @@ public class GUI extends Application {
         TextField arrivalDate = new TextField();
         TextField departureTime = new TextField();
         TextField arrivalTime = new TextField();
-        TextField ticketID = new TextField();
+        TextField ticketsRemaining = new TextField();
         TextField ticketPrice = new TextField();
 
         Button createFlight = new Button("Create Flight");
@@ -582,8 +594,11 @@ public class GUI extends Application {
             try {
                 Connection connection = myJDBC.getConnection();
                 Statement statement = connection.createStatement();
-                String sql = "INSERT INTO flights (flightNumber, departureCity, arrivalCity, departureDate, arrivalDate, departureTime, arrivalTime, ticketID, ticketPrice) VALUES ('" + flightNumbers + "', '" + departureCity.getText() + "', '" + arrivalCity.getText() + "', '" + departureDate.getText() + "', '" + arrivalDate.getText() + "', '" + departureTime.getText() + "', '" + arrivalTime.getText() + "', '" + ticketID.getText() + "', '" + ticketPrice.getText() + "')";
+                String sql = "INSERT INTO flights (flightID, departureCity, arrivalCity, departureDate, arrivalDate, departureTime, arrivalTime, ticketsRemaining) VALUES ('" + flightNumbers + "', '" + departureCity.getText() + "', '" + arrivalCity.getText() + "', '" + departureDate.getText() + "', '" + arrivalDate.getText() + "', '" + departureTime.getText() + "', '" + arrivalTime.getText() + "', '" + ticketsRemaining.getText() + "')";
                 statement.executeUpdate(sql);
+                if (statement.executeUpdate(sql) > 0) {
+                    new Label("Flight created successfully");
+                }
             }
             catch (Exception ex) {
                 throw new RuntimeException(ex);
@@ -601,7 +616,7 @@ public class GUI extends Application {
                         new VBox (new Label("Arrival Date"), arrivalDate),
                         new VBox (new Label("Departure Time"), departureTime),
                         new VBox (new Label("Arrival Time"), arrivalTime),
-                        new VBox (new Label("Ticket ID"), ticketID),
+                        new VBox (new Label("Ticket ID"), ticketsRemaining),
                         new VBox (new Label("Ticket Price"), ticketPrice),
                         createFlight,
                         backButton
@@ -614,7 +629,7 @@ public class GUI extends Application {
         text.setFont(Font.font("System", FontWeight.BOLD, 22));
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
-            this.stage.setScene(this.startScene);
+            this.stage.setScene(this.getAdminScreen());
         });
         TextField flightNumber = new TextField();
         Button deleteFlight = new Button("Delete Flight");
@@ -646,7 +661,7 @@ public class GUI extends Application {
         text.setFont(Font.font("System", FontWeight.BOLD, 22));
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
-            this.stage.setScene(this.startScene);
+            this.stage.setScene(this.getAdminScreen());
         });
         TextField flightNumber = new TextField();
         TextField departureCity = new TextField();
