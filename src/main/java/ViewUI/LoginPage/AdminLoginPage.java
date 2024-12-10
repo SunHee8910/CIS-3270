@@ -4,10 +4,7 @@ import ViewUI.Page;
 import ViewUI.PageManager;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -29,6 +26,7 @@ public class AdminLoginPage extends Page {
         Text text = new Text("✈️ Admin Screen ");
         text.setFont(Font.font("System", FontWeight.BOLD, 22));
         Button backButton = new Button("Back");
+        Button forgotPasswordButton = new Button("Forgot Password");
         backButton.setOnAction(e -> {
             this.pageManager.setScene(LANDING);
         });
@@ -56,6 +54,10 @@ public class AdminLoginPage extends Page {
         for (int i = 0; i < errorMessages.size(); i++) {
             errorMessages.get(i).setManaged(false);
         }
+
+        forgotPasswordButton.setOnAction(e -> {
+            this.handleForgotPasswordAction(e, usernameTextField.getText());
+        });
 
         loginButton.setOnAction(event -> {
             for (int i = 0; i < errorMessages.size(); i++) {

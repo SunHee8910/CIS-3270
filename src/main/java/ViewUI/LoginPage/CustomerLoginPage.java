@@ -29,6 +29,7 @@ public class CustomerLoginPage extends Page {
         Text text = new Text("✈️ Login");
         text.setFont(Font.font("System", FontWeight.BOLD, 22));
         Button backButton = new Button("Back");
+        Button forgotPasswordButton = new Button("Forgot Password");
         backButton.setOnAction(e -> {
             this.pageManager.setScene(LANDING);
         });
@@ -52,6 +53,10 @@ public class CustomerLoginPage extends Page {
         for (int i = 0; i < errorMessages.size(); i++) {
             errorMessages.get(i).setManaged(false);
         }
+
+        forgotPasswordButton.setOnAction(e -> {
+            this.handleForgotPasswordAction(e, usernameTextField.getText());
+        });
 
         loginButton.setOnAction(e -> {
             for (int i = 0; i < errorMessages.size(); i++) {
@@ -88,7 +93,10 @@ public class CustomerLoginPage extends Page {
         });
 
 
-        root.getChildren().addAll(text, new Label("Username"), usernameTextField, usernameError, new Label("Password"), passwordTextField, passwordError, signInError, new HBox(5, backButton, loginButton));
+        root.getChildren().addAll(text,
+                new Label("Username"), usernameTextField, usernameError,
+                new Label("Password"), passwordTextField, passwordError, signInError,
+                new VBox(5, new HBox(5, backButton, loginButton)), forgotPasswordButton);
         return new Scene(root, 800, 800);
 
     }

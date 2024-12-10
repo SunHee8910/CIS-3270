@@ -1,6 +1,11 @@
 package ViewUI;
 
+import ViewUI.LoginPage.ForgotPasswordPage;
+import javafx.event.ActionEvent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+
+import static Database.myJDBC.getUserRecoveryQuestionAndAnswerQuery;
 
 public abstract class Page {
     public PageManager pageManager;
@@ -15,10 +20,29 @@ public abstract class Page {
     public static int CREATE_FLIGHT = 8;
     public static int UPDATE_FLIGHT = 9;
     public static int DELETE_FLIGHT = 10;
+    public static int FORGOT_PASSWORD = 11;
 
     public Page(PageManager pageManager) {
         this.pageManager = pageManager;
     }
 
     public abstract Scene getScene();
+
+    public void handleForgotPasswordAction(ActionEvent actionEvent, String username) {
+        if (username.isBlank()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("Please enter a valid username");
+            alert.show();
+        } else {
+            String[] recoveryInfo = getUserRecoveryQuestionAndAnswerQuery(username);
+            if (recoveryInfo == null) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("Please enter a valid username");
+                return;
+            }
+
+            ((ForgotPasswordPage)this.pageManager.pages.get(FORGOT_PASSWORD)).setRecoveryInfo(recoveryInfo);
+            this.pageManager.setScene(FORGOT_PASSWORD);
+        }
+    }
 }
