@@ -449,7 +449,7 @@ public class GUI extends Application {
             }
 
             if (usernameError.getText().isBlank() && passwordError.getText().isBlank() && admincodeError.getText().isBlank()) {
-                boolean isSuccessful = adminLoginQuery(enteredUsername, enteredPassword, adminCode);
+                boolean isSuccessful = adminLoginQuery(enteredUsername, enteredPassword);
                 if (!isSuccessful) {
                     signInError.setText("Invalid username or password.");
                 }

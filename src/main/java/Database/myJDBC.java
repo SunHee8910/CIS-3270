@@ -19,7 +19,6 @@ public class myJDBC {
     public static boolean getIsUsernameUniqueQuery(String username) {
         try {
             ResultSet usernameResult = myJDBC.getConnection().createStatement().executeQuery(String.format("select * from customers where lower(username) = lower('%s')", username));
-
             return !usernameResult.next();
         } catch (Exception e) {
             return false;
@@ -38,17 +37,16 @@ public class myJDBC {
         }
     }
 
-    public static boolean adminLoginQuery(String username, String password, String adminCode){
+    public static boolean adminLoginQuery(String username, String password) {
         try {
-            Connection connection = myJDBC.getConnection();
-            Statement statement = connection.createStatement();
-
-            ResultSet resultSet = statement.executeQuery("Select * from customers where customerName = '" + usernameTextField.getText() + "' and password = '" + passwordTextField.getText() + "'");
-            if (resultSet.next() && Integer.parseInt(admincodeTextField.getText()) == 1234) {
+            ResultSet resultSet = myJDBC.getConnection().createStatement().executeQuery(
+                    String.format(
+                            "Select * from customers where lower(username) = '%s' and password = '%s'", username, password
+                    ));
+            return resultSet.next();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return false;
         }
-
     }
 
 }
