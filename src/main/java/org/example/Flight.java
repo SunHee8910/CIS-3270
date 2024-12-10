@@ -131,4 +131,8 @@ public class Flight {
     public static void setFlightsBooked(int flightsBooked) {
         Flight.flightsBooked = flightsBooked;
     }
+
+    public void setdepartureTime(String departureTime) {
+        this.departureTime = departureTime;
+    }
 }
