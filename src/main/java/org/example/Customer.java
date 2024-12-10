@@ -1,4 +1,4 @@
-﻿package org.example;
+package org.example;
 public class Customer extends User {
 
     public Customer(String customerName, String password, String address, String zip, String state,
@@ -6,7 +6,7 @@ public class Customer extends User {
         super(customerName, password, address, zip, state, username, email, ssn, recoveryAnswer);
     }
 
-    }
+
 
     // Customer-specific methods
     public void bookFlight(Flight flight) {
@@ -19,3 +19,4 @@ public class Customer extends User {
         // Logic to retrieve and display booked flights
     }
 }
+
