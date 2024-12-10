@@ -500,8 +500,8 @@ public class GUI extends Application {
                 Connection connection = myJDBC.getConnection();
                 Statement statement = connection.createStatement();
 
-                ResultSet resultSet = statement.executeQuery("Select * from users where username = " + usernameTextField.getText() + "and adminCode = " + admincodeTextField.getText() + "and password = " + passwordTextField.getText());
-                if (resultSet.next()) {
+                ResultSet resultSet = statement.executeQuery("Select * from customers where customerName = '" + usernameTextField.getText() + "' and password = '" + passwordTextField.getText() + "'");
+                if (resultSet.next() && Integer.parseInt(admincodeTextField.getText()) == 1234) {
                     this.stage.setScene(getAdminScreen());
                 } else {
                     this.stage.setScene(getAdminLogin());
@@ -582,7 +582,7 @@ public class GUI extends Application {
             try {
                 Connection connection = myJDBC.getConnection();
                 Statement statement = connection.createStatement();
-                String sql = "INSERT INTO flights (flightNumber, departureCity, arrivalCity, departureDate, arrivalDate, departureTime, arrivalTime, ticketID, ticketPrice) VALUES (" + flightNumbers + ", " + departureCity.getText() + ", " + arrivalCity.getText() + ", " + departureDate.getText() + ", " + arrivalDate.getText() + ", " + departureTime.getText() + ", " + arrivalTime.getText() + ", " + ticketID.getText() + ", " + ticketPrice.getText() + ")";
+                String sql = "INSERT INTO flights (flightNumber, departureCity, arrivalCity, departureDate, arrivalDate, departureTime, arrivalTime, ticketID, ticketPrice) VALUES ('" + flightNumbers + "', '" + departureCity.getText() + "', '" + arrivalCity.getText() + "', '" + departureDate.getText() + "', '" + arrivalDate.getText() + "', '" + departureTime.getText() + "', '" + arrivalTime.getText() + "', '" + ticketID.getText() + "', '" + ticketPrice.getText() + "')";
                 statement.executeUpdate(sql);
             }
             catch (Exception ex) {
