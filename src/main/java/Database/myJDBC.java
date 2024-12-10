@@ -1,7 +1,5 @@
 package Database;
 
-import javafx.scene.control.Label;
-
 import java.sql.*;
 
 import static CodingLogicPackage.CodingLogic.generateUserID;
@@ -16,14 +14,15 @@ public class myJDBC {
         return null;
     }
 
-    public static boolean getIsUsernameUniqueQuery(String username) {
+    public static boolean getUsernameIsUniqueQuery(String username) {
         try {
             ResultSet usernameResult = myJDBC.getConnection().createStatement().executeQuery(String.format("select * from customers where lower(username) = lower('%s')", username));
+//            System.out.println(usernameResult.next() ?"has next" : "has no next");
             return !usernameResult.next();
         } catch (Exception e) {
+            System.out.println("hit exception: " + e.getMessage());
             return false;
         }
-
     }
 
     public static boolean createCustomerQuery(String firstName, String lastName, String password, String address, String zip, String state, String email, int ssn, String question, String username) {
@@ -37,7 +36,7 @@ public class myJDBC {
         }
     }
 
-    public static boolean adminLoginQuery(String username, String password) {
+    public static boolean userOrAdminLoginQuery(String username, String password) {
         try {
             ResultSet resultSet = myJDBC.getConnection().createStatement().executeQuery(
                     String.format(
