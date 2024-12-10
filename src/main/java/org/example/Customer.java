@@ -8,13 +8,14 @@ public class Customer extends User {
 
 
 
+
     // Customer-specific methods
     public void bookFlight(Flight flight) {
         System.out.println("Booking flight: " + flight.getTicketID());
         // Logic to book a flight
     }
 
-    public void viewBookings() {
+    public void viewBookings(String username) {
         System.out.println("Viewing booked flights...");
         // Logic to retrieve and display booked flights
     }

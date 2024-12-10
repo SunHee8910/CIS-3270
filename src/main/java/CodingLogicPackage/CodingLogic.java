@@ -36,21 +36,26 @@ public class CodingLogic {
     public static int generateUserID(int useriD) {
         int generatedIDNumber;
         Random random = new Random();
+
         try {
             for (int oneLoop = 0; oneLoop < 1; oneLoop++) {
+                // Generate a random number
                 generatedIDNumber = random.nextInt(Integer.MAX_VALUE);
-                Integer newInt = Integer.valueOf(generatedIDNumber);
 
-                if (!userIDStorage.contains(newInt)) {
-                    userIDStorage.add(newInt);
-                    return generatedIDNumber;
+                // Check if the generated number is unique
+                if (!userIDStorage.contains(generatedIDNumber)) {
+                    userIDStorage.add(generatedIDNumber); // Add to storage
+                    return generatedIDNumber; // Return the new unique ID
                 } else {
-                    oneLoop--;
+                    // If not unique, allow the loop to retry
+                    oneLoop--; // Decrement the loop counter to retry once
                 }
             }
         } catch (Exception e) {
-            System.out.println("An error has occurred while generating a user ID.");
+            System.out.println("An error has occurred while generating a user ID: " + e.getMessage());
         }
+
+        // If all attempts fail, return the provided fallback ID
         return useriD;
     }
 

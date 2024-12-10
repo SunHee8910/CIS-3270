@@ -109,6 +109,7 @@ public class SearchFlightPage extends Page {
                                 "Arrival Time: " +
                                 resultSet.getString("arrivalTime"));
                         flightlist.getChildren().add(new Label(flights[i].getText()));
+
                         flightlist.getChildren().add(new Button ("Book Flight"));
                         i++;
                     }

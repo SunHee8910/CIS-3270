@@ -13,6 +13,7 @@ public class Flight{
     private int ticketsRemaining = 100;
     private int ticketID = 0;
     public static int flightsBooked = 0;
+    private String username;
 
     // default constructor
     public Flight(){
@@ -28,6 +29,7 @@ public class Flight{
         this.arrivalDate = arrivalDate;
         this.departureTime = departureTime;
         this.arrivalTime = arrivalTime;
+
         flightsBooked++;
 
     }
