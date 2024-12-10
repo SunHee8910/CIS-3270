@@ -2,7 +2,10 @@ package org.example;
 
 import CodingLogicPackage.CodingLogic;
 
+import java.util.ArrayList;
+
 public abstract class User {
+    private ArrayList<Flight> bookedFlights;
     protected int userID = 0;
     protected String customerName = "Unknown";
     protected String password = "Unknown";
