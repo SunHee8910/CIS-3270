@@ -22,8 +22,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import static CodingLogicPackage.CodingLogic.*;
-import static Database.myJDBC.createCustomerQuery;
-import static Database.myJDBC.getIsUsernameUniqueQuery;
+import static Database.myJDBC.*;
 
 public class GUI extends Application {
     Stage stage;
@@ -379,7 +378,7 @@ public class GUI extends Application {
                 }
             }
             if (!hasError) {
-                boolean isSuccessful = createCustomerQuery(firstName, lastName, password, address, zip, state, email, Integer.parseInt(ssn), question,username);
+                boolean isSuccessful = createCustomerQuery(firstName, lastName, password, address, zip, state, email, Integer.parseInt(ssn), question, username);
                 if (isSuccessful) {
                     this.stage.setScene(getUserScreen());
                 }
@@ -445,31 +444,26 @@ public class GUI extends Application {
             }
             if (adminCode.isBlank()) {
                 admincodeError.setText("Admin code is required");
+            } else if (!adminCode.equals("1234")) {
+                admincodeError.setText("Admin code is invalid");
             }
 
-            boolean successfulLogin = false;
-            if (usernameError.getText().isBlank() && passwordError.getText().isBlank() && admincodeError.getText().isBlank() && !successfulLogin) {
-                signInError.setText("Invalid username, password or Admin code");
+            if (usernameError.getText().isBlank() && passwordError.getText().isBlank() && admincodeError.getText().isBlank()) {
+                boolean isSuccessful = adminLoginQuery(enteredUsername, enteredPassword, adminCode);
+                if (!isSuccessful) {
+                    signInError.setText("Invalid username or password.");
+                }
             }
 
+            boolean hasError = false;
             for (int i = 0; i < errorMessages.size(); i++) {
                 if (!errorMessages.get(i).getText().isBlank()) {
+                    hasError = true;
                     errorMessages.get(i).setManaged(true);
                 }
             }
-            try {
-                Connection connection = myJDBC.getConnection();
-                Statement statement = connection.createStatement();
-
-                ResultSet resultSet = statement.executeQuery("Select * from customers where customerName = '" + usernameTextField.getText() + "' and password = '" + passwordTextField.getText() + "'");
-                if (resultSet.next() && Integer.parseInt(admincodeTextField.getText()) == 1234) {
-                    this.stage.setScene(getAdminScreen());
-                } else {
-                    this.stage.setScene(getAdminLogin());
-                    new Label("Invalid username or password");
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            if (!hasError) {
+                this.stage.setScene(getAdminScreen());
             }
         });
 
@@ -477,8 +471,6 @@ public class GUI extends Application {
         root.getChildren().addAll(text, new VBox(5, new VBox(new Label("Username"), usernameTextField, usernameError), new VBox(new Label("Password"), passwordTextField, passwordError), new VBox(new Label("Admin Code"), admincodeTextField, admincodeError), signInError, new HBox(5, backButton, loginButton)));
 
         return new Scene(root, 800, 800);
-
-
     }
 
     public Scene getAdminScreen() {
