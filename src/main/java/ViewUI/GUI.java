@@ -200,14 +200,16 @@ public class GUI extends Application {
         TextField departureTime = new TextField();
         TextField arrivalTime = new TextField();
         Button searchFlights = new Button("Search Flights");
-        Label resultlist = new Label();
+        Label result = new Label("Results");
+        Text resultlist = new Text();
+        resultlist.setFont(Font.font("System", FontWeight.BOLD, 12));
         Button book = new Button();
         searchFlights.setOnAction(e -> {
 
             try {
                 Connection connection = myJDBC.getConnection();
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery("SELECT * FROM flights WHERE departureCity LIKE '%" + departureCity.getText() + "%' AND arrivalCity LIKE '%" + arrivalCity.getText() + "%' AND departureDate LIKE '%" + departureDate.getText() + "%' AND arrivalDate LIKE '%" + arrivalDate.getText() + "%' AND departureTime LIKE '%" + departureTime.getText() + "%' AND arrivalTime LIKE '%" + arrivalTime.getText() + "%'");
+                ResultSet resultSet = statement.executeQuery("SELECT * FROM flights WHERE departureCity LIKE '%" + departureCity.getText() + "%' OR arrivalCity LIKE '%" + arrivalCity.getText() + "%' OR departureDate LIKE '%" + departureDate.getText() + "%' OR arrivalDate LIKE '%" + arrivalDate.getText() + "%' OR departureTime LIKE '%" + departureTime.getText() + "%' OR arrivalTime LIKE '%" + arrivalTime.getText() + "%'");
                 StringBuilder results = new StringBuilder();
                 while (resultSet.next()) {
                     results.append((resultSet.getString("flightNumber") + " " + resultSet.getString("departureCity") + " " + resultSet.getString("arrivalCity") + " " + resultSet.getString("departureDate") + " " + resultSet.getString("arrivalDate") + " " + resultSet.getString("departureTime") + " " + resultSet.getString("arrivalTime") + " " + resultSet.getString("ticketID") + " " + resultSet.getString("ticketPrice")));
@@ -236,7 +238,8 @@ public class GUI extends Application {
                         new VBox (new Label("Departure Time"), departureTime),
                         new VBox (new Label("Arrival Time"), arrivalTime),
                         searchFlights,
-                        backButton
+                        backButton,
+                        new HBox (new Label("Results"), resultlist)
                 )
         );
         ScrollPane scroll = new ScrollPane(root);
