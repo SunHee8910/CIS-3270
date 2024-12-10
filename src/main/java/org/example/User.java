@@ -136,9 +136,10 @@ public abstract class User {
         return "Incorrect recovery answer. Try again.";
     }
 
-    public Collection<Flight> getBookedFlights() {
+    public ArrayList<Flight> getBookedFlights() {
         return bookedFlights;
     }
+
 }
 
 
