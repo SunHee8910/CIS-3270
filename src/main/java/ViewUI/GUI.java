@@ -204,7 +204,7 @@ public class GUI extends Application {
             try {
                 Connection connection = myJDBC.getConnection();
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery("SELECT * FROM flights WHERE departureCity = " + departureCity.getText() + "AND arrivalCity = " + arrivalCity.getText() + "AND departureDate = " + departureDate.getText() + "AND arrivalDate = " + arrivalDate.getText() + "AND departureTime = " + departureTime.getText() + "AND arrivalTime = " + arrivalTime.getText());
+                ResultSet resultSet = statement.executeQuery("SELECT * FROM flights WHERE departureCity LIKE '%" + departureCity.getText() + "%' AND arrivalCity LIKE '%" + arrivalCity.getText() + "%' AND departureDate LIKE '%" + departureDate.getText() + "%' AND arrivalDate LIKE '%" + arrivalDate.getText() + "%' AND departureTime LIKE '%" + departureTime.getText() + "%' AND arrivalTime LIKE '%" + arrivalTime.getText() + "%'");
             }
             catch (Exception ex) {
                 throw new RuntimeException(ex);
@@ -388,7 +388,22 @@ public class GUI extends Application {
                 if (!errorMessages.get(i).getText().isBlank()) {
                     errorMessages.get(i).setManaged(true);
                 }
+                else if ( i == errorMessages.size() - 1 && errorMessages.get(i).getText().isBlank()) {
+                    try {
+                        Connection connection = myJDBC.getConnection();
+                        Statement statement = connection.createStatement();
+                        String sql = "INSERT INTO users (firstName, lastName, address, zip, state, username, password, email, ssn, question) VALUES ('" + firstName + "', '" + lastName + "', '" + address + "', '" + zip + "', '" + state + "', '" + username + "', '" + password + "', '" + email + "', '" + ssn + "', '" + question + "')";
+                        statement.executeUpdate(sql);
+                        this.stage.setScene(getUserScreen());
+                    }
+                    catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
             }
+
+
+
         });
 
 
@@ -564,7 +579,8 @@ public class GUI extends Application {
             try {
                 Connection connection = myJDBC.getConnection();
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery("INSERT INTO flights (flightNumber, departureCity, arrivalCity, departureDate, arrivalDate, departureTime, arrivalTime, ticketID, ticketPrice) VALUES (" + flightNumbers + ", " + departureCity.getText() + ", " + arrivalCity.getText() + ", " + departureDate.getText() + ", " + arrivalDate.getText() + ", " + departureTime.getText() + ", " + arrivalTime.getText() + ", " + ticketID.getText() + ", " + ticketPrice.getText() + ")");
+                String sql = "INSERT INTO flights (flightNumber, departureCity, arrivalCity, departureDate, arrivalDate, departureTime, arrivalTime, ticketID, ticketPrice) VALUES (" + flightNumbers + ", " + departureCity.getText() + ", " + arrivalCity.getText() + ", " + departureDate.getText() + ", " + arrivalDate.getText() + ", " + departureTime.getText() + ", " + arrivalTime.getText() + ", " + ticketID.getText() + ", " + ticketPrice.getText() + ")";
+                statement.executeUpdate(sql);
             }
             catch (Exception ex) {
                 throw new RuntimeException(ex);
@@ -603,7 +619,8 @@ public class GUI extends Application {
             try {
                 Connection connection = myJDBC.getConnection();
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery("DELETE FROM flights WHERE flightNumber = " + flightNumber.getText());
+                String sql = "DELETE FROM flights WHERE flightNumber = " + flightNumber.getText();
+                statement.executeUpdate(sql);
             }
             catch (Exception ex) {
                 throw new RuntimeException(ex);
@@ -648,7 +665,8 @@ public class GUI extends Application {
                     try {
                         Connection connection1 = myJDBC.getConnection();
                         Statement statement1 = connection.createStatement();
-                        ResultSet resultSet = statement.executeQuery("UPDATE flights SET departureCity = " + departureCity.getText() + ", arrivalCity = " + arrivalCity.getText() + ", departureDate = " + departureDate.getText() + ", arrivalDate = " + arrivalDate.getText() + ", departureTime = " + departureTime.getText() + ", arrivalTime = " + arrivalTime.getText() + ", ticketID = " + ticketID.getText() + ", ticketPrice = " + ticketPrice.getText() + " WHERE flightNumber = " + flightNumber.getText());
+                        String sql = "UPDATE flights SET departureCity = " + departureCity.getText() + ", arrivalCity = " + arrivalCity.getText() + ", departureDate = " + departureDate.getText() + ", arrivalDate = " + arrivalDate.getText() + ", departureTime = " + departureTime.getText() + ", arrivalTime = " + arrivalTime.getText() + ", ticketID = " + ticketID.getText() + ", ticketPrice = " + ticketPrice.getText() + " WHERE flightNumber = " + flightNumber.getText();
+                        statement1.executeUpdate(sql);
                     }
                     catch (Exception ex) {
                         throw new RuntimeException(ex);
