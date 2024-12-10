@@ -4,35 +4,39 @@ package ViewUI;
 import ViewUI.FlightPage.*;
 import ViewUI.LoginPage.AdminLoginPage;
 import ViewUI.LoginPage.CustomerLoginPage;
+import ViewUI.LoginPage.ForgotPasswordPage;
 import javafx.stage.Stage;
+
+import java.util.ArrayList;
 
 import static ViewUI.Page.*;
 
 public class PageManager {
-    Page[] pages;
+    ArrayList<Page> pages;
     Stage stage;
 
     PageManager(Stage stage) {
         this.stage = stage;
-        pages = new Page[11];
-        pages[ADMIN_LOGIN] = new AdminLoginPage(this);
-        pages[CUSTOMER_LOGIN] = new CustomerLoginPage(this);
-        pages[LANDING] = new LandingPage(this);
-        pages[SEARCH_FLIGHT] = new SearchFlightPage(this);
-        pages[REGISTER] = new RegisterPage(this);
-        pages[USER] = new UserPage(this);
-        pages[VIEW_FLIGHT] = new ViewFlightPage(this);
-        pages[ADMIN] = new AdminPage(this);
-        pages[CREATE_FLIGHT] = new CreateFlightPage(this);
-        pages[UPDATE_FLIGHT] = new UpdateFlightPage(this);
-        pages[DELETE_FLIGHT] = new DeleteFlightPage(this);
+        pages = new ArrayList<Page>();
+        pages.add(ADMIN_LOGIN, new AdminLoginPage(this));
+        pages.add(CUSTOMER_LOGIN, new CustomerLoginPage(this));
+        pages.add(LANDING, new LandingPage(this));
+        pages.add(SEARCH_FLIGHT, new SearchFlightPage(this));
+        pages.add(REGISTER, new RegisterPage(this));
+        pages.add(USER, new UserPage(this));
+        pages.add(VIEW_FLIGHT, new ViewFlightPage(this));
+        pages.add(ADMIN, new AdminPage(this));
+        pages.add(CREATE_FLIGHT, new CreateFlightPage(this));
+        pages.add(UPDATE_FLIGHT, new UpdateFlightPage(this));
+        pages.add(DELETE_FLIGHT, new DeleteFlightPage(this));
+        pages.add(FORGOT_PASSWORD, new ForgotPasswordPage(this));
 
-        stage.setScene(pages[LANDING].getScene());
+        stage.setScene(pages.get(LANDING).getScene());
         stage.setTitle("Flight Tracker");
         stage.show();
     }
 
     public void setScene(int newScene) {
-        stage.setScene(pages[newScene].getScene());
+        stage.setScene(pages.get(newScene).getScene());
     }
 }

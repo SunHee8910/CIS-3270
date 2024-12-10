@@ -3,8 +3,10 @@ package org.example;
 import CodingLogicPackage.CodingLogic;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 public abstract class User {
+    private ArrayList<Flight> bookedFlights;
     protected int userID = 0;
     protected String customerName = "Unknown";
     protected String password = "Unknown";
@@ -16,10 +18,10 @@ public abstract class User {
     protected int ssn = 0;
     protected String recoveryAnswer = "Unknown";
     protected boolean isAdmin = false;
-    private ArrayList<Flight> bookedFlights;
 
-
-    public User() {}
+    public User() {
+        this.bookedFlights = new ArrayList<>();
+    }
 
     public User(String customerName, String password, String address, String zip, String state,
                 String username, String email, int ssn, String recoveryAnswer) {
@@ -33,6 +35,7 @@ public abstract class User {
         this.email = email;
         this.ssn = ssn;
         this.recoveryAnswer = recoveryAnswer;
+        this.bookedFlights = new ArrayList<>();
     }
 
     public int getUserID() {
@@ -79,15 +82,7 @@ public abstract class User {
         return isAdmin;
     }
 
-    public void addFlight(Flight flight) {
-        bookedFlights.add(flight);
-    }
-
-    public ArrayList<Flight> getBookedFlights() {
-        return bookedFlights;
-    }
-
-
+    // Setters
     public void setCustomerName(String customerName) {
         this.customerName = customerName;
     }
@@ -139,6 +134,10 @@ public abstract class User {
             return this.password;
         }
         return "Incorrect recovery answer. Try again.";
+    }
+
+    public ArrayList<Flight> getBookedFlights() {
+        return bookedFlights;
     }
 
 }

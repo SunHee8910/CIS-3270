@@ -99,6 +99,10 @@ public class Flight{
     public int getTicketID(){
         return ticketID;
     }
+
+    public void setdepartureTime(String departureTime) {
+        this.departureTime = departureTime;
+    }
 /*
     public static void main(String[] args) {
         Flight newFlight = new Flight("test","test2", "test3", "test4", "test5", "test6");
