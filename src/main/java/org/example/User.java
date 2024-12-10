@@ -3,6 +3,7 @@ package org.example;
 import CodingLogicPackage.CodingLogic;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 public abstract class User {
     private ArrayList<Flight> bookedFlights;
@@ -135,6 +136,9 @@ public abstract class User {
         return "Incorrect recovery answer. Try again.";
     }
 
+    public Collection<Flight> getBookedFlights() {
+        return bookedFlights;
+    }
 }
 
 
