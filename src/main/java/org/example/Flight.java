@@ -13,6 +13,7 @@ public class Flight{
     private int ticketsRemaining = 100;
     private int ticketID = 0;
     public static int flightsBooked = 0;
+    private ArrayList<User> passengers;
 
     // default constructor
     public Flight(){
@@ -65,6 +66,16 @@ public class Flight{
         return departureDate;
     }
 //
+
+    public void addPassenger(User user) {
+        passengers.add(user);
+    }
+
+    public ArrayList<User> getPassengers() {
+        return passengers;
+    }
+
+
     public void setDepartureDate(String departureDate) {
         this.departureDate = departureDate;
     }
