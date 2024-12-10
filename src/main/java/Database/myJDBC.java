@@ -16,8 +16,7 @@ public class myJDBC {
 
     public static boolean getUsernameIsUniqueQuery(String username) {
         try {
-            ResultSet usernameResult = myJDBC.getConnection().createStatement().executeQuery(String.format("select * from customers where lower(username) = lower('%s')", username));
-//            System.out.println(usernameResult.next() ?"has next" : "has no next");
+            ResultSet usernameResult = myJDBC.getConnection().createStatement().executeQuery(String.format("select * from users where lower(username) = lower('%s')", username));
             return !usernameResult.next();
         } catch (Exception e) {
             System.out.println("hit exception: " + e.getMessage());
@@ -25,13 +24,16 @@ public class myJDBC {
         }
     }
 
-    public static boolean createCustomerQuery(String firstName, String lastName, String password, String address, String zip, String state, String email, int ssn, String question, String username) {
+    public static boolean createCustomerQuery(String firstName, String lastName, String password, String address, String zip, String state, String email, int ssn, String question, String answer, String username) {
         try {
             int customerid = generateUserID(1);
-            getConnection().createStatement().executeUpdate(String.format("INSERT INTO customers (customerID, customerName, password, address, zip, state, email, ssn, recoveryAnswer, username) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", customerid, firstName + " " + lastName, password, address, zip, state, email, ssn, question, username));
+            getConnection().createStatement().executeUpdate(String.format("INSERT INTO users " +
+                            "(userID, customerName, password, address, zip, state, email, ssn, recoveryAnswer, username, recoveryQuestion) VALUES " +
+                            "('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+                    customerid, firstName + " " + lastName, password, address, zip, state, email, ssn, answer, username, question));
             return true;
         } catch (Exception e) {
-            System.out.printf("Unable to create user");
+            System.out.printf("Unable to create user: %s\n", e.getMessage());
             return false;
         }
     }
@@ -40,11 +42,31 @@ public class myJDBC {
         try {
             ResultSet resultSet = myJDBC.getConnection().createStatement().executeQuery(
                     String.format(
-                            "Select * from customers where lower(username) = '%s' and password = '%s'", username, password
+                            "Select * from users where lower(username) = '%s' and password = '%s'", username, password
                     ));
             return resultSet.next();
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    public static String[] getUserRecoveryQuestionAndAnswerQuery(String username) {
+        try {
+            ResultSet resultSet = myJDBC.getConnection().createStatement().executeQuery(
+                    String.format(
+                            "Select recoveryQuestion, recoveryAnswer, password from users where lower(username) = '%s'", username
+                    ));
+            boolean hasUsername = resultSet.next();
+            if (!hasUsername) {
+                return null;
+            }
+            String recoveryQuestion = resultSet.getString("recoveryQuestion");
+            String recoveryAnswer = resultSet.getString("recoveryAnswer");
+            String password = resultSet.getString("password");
+
+            return new String[]{recoveryQuestion, recoveryAnswer, password};
+        } catch (Exception e) {
+            return null;
         }
     }
 
