@@ -1,7 +1,6 @@
 package Database;
-import Database.myJDBC;
 import java.sql.*;
-
+import java.util.HashMap;
 import org.example.Flight;
 import static Database.myJDBC.getConnection;
 public class FlightDBQuery {
@@ -109,5 +108,36 @@ public class FlightDBQuery {
         }
     }
 
+
+    // Search for flights based on criteria
+    public HashMap<String, Flight> searchFlights(String departureCity, String arrivalCity, String departureDate, String departureTime) {
+        HashMap<String, Flight> flights = new HashMap<>();
+        String sql = "SELECT * FROM Flight WHERE " +
+                "(departureCity = '" + departureCity + "' OR '" + departureCity + "' IS NULL) AND " +
+                "(arrivalCity = '" + arrivalCity + "' OR '" + arrivalCity + "' IS NULL) AND " +
+                "(departureDate = '" + departureDate + "' OR '" + departureDate + "' IS NULL) AND " +
+                "(departureTime = '" + departureTime + "' OR '" + departureTime + "' IS NULL)";
+
+        try (Connection connection = myJDBC.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+
+            while (resultSet.next()) {
+                Flight flight = new Flight(
+                        resultSet.getString("departureCity"),
+                        resultSet.getString("arrivalCity"),
+                        resultSet.getString("departureDate"),
+                        resultSet.getString("arrivalDate"),
+                        resultSet.getString("departureTime"),
+                        resultSet.getString("arrivalTime")
+                );
+                flights.put(resultSet.getString("ticketID"), flight); // Use ticketID as the key
+            }
+        } catch (Exception e) {
+            System.err.println("Error searching flights: " + e.getMessage());
+        }
+
+        return flights;
+    }
 
 }
