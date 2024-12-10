@@ -1,10 +1,7 @@
 package Database;
 import Database.myJDBC;
+import java.sql.*;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
 import org.example.Flight;
 import static Database.myJDBC.getConnection;
 public class FlightDBQuery {
@@ -51,5 +48,66 @@ public class FlightDBQuery {
             }
         }
     }
+
+    // Delete a flight from a user's account
+    public boolean deleteFlight(String username, Flight flight) {
+        try (Connection connection = myJDBC.getConnection();
+             Statement statement = connection.createStatement()) {
+
+            // Construct SQL to delete the flight booking
+            String sql = "DELETE FROM bookings WHERE " +
+                    "username = '" + username + "' AND " +
+                    "ticketID = '" + flight.getTicketID() + "'";
+
+            int rowsAffected = statement.executeUpdate(sql);
+
+            if (rowsAffected > 0) {
+                System.out.println("Flight with ticket ID " + flight.getTicketID() + " deleted from user " + username + "'s account.");
+                return true;
+            } else {
+                System.out.println("Flight with ticket ID " + flight.getTicketID() + " not found in user " + username + "'s account.");
+                return false;
+            }
+
+        } catch (Exception e) {
+            System.err.println("Error deleting flight: " + e.getMessage());
+            return false;
+        }
+    }
+
+
+    public boolean bookFlight(String username, Flight flight) {
+        try (Connection connection = myJDBC.getConnection();
+             Statement statement = connection.createStatement()) {
+
+            // Check if flight is already booked
+            String checkSql = "SELECT COUNT(*) AS total FROM bookings WHERE " +
+                    "username = '" + username + "' AND " +
+                    "ticketID = '" + flight.getTicketID() + "'";
+            ResultSet resultSet = statement.executeQuery(checkSql);
+
+            resultSet.next();
+            int count = resultSet.getInt("total");
+
+            if (count > 0) {
+                System.out.println("Flight with ticket ID " + flight.getTicketID() + " is already booked by user " + username + ".");
+                return false;
+            }
+
+            // Insert the booking
+            String insertSql = "INSERT INTO bookings (username, ticketID) VALUES (" +
+                    "'" + username + "', " +
+                    "'" + flight.getTicketID() + "')";
+            statement.executeUpdate(insertSql);
+
+            System.out.println("Flight with ticket ID " + flight.getTicketID() + " successfully booked for user " + username + ".");
+            return true;
+
+        } catch (Exception e) {
+            System.err.println("Error booking flight: " + e.getMessage());
+            return false;
+        }
+    }
+
 
 }
