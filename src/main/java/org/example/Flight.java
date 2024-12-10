@@ -13,7 +13,7 @@ public class Flight{
     private int ticketsRemaining = 100;
     private int ticketID = 0;
     public static int flightsBooked = 0;
-    private String username;
+    private ArrayList<User> passengers;
 
     // default constructor
     public Flight(){
@@ -29,7 +29,6 @@ public class Flight{
         this.arrivalDate = arrivalDate;
         this.departureTime = departureTime;
         this.arrivalTime = arrivalTime;
-
         flightsBooked++;
 
     }
@@ -67,6 +66,16 @@ public class Flight{
         return departureDate;
     }
 //
+
+    public void addPassenger(User user) {
+        passengers.add(user);
+    }
+
+    public ArrayList<User> getPassengers() {
+        return passengers;
+    }
+
+
     public void setDepartureDate(String departureDate) {
         this.departureDate = departureDate;
     }

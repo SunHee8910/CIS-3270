@@ -5,7 +5,7 @@ public class Admin extends User {
     public Admin(String customerName, String password, String address, String zip, String state,
                  String username, String email, int ssn, String recoveryAnswer) {
         super(customerName, password, address, zip, state, username, email, ssn, recoveryAnswer);
-        this.isAdmin = true; // Explicitly set admin flag to true
+        this.isAdmin = true;
     }
 
     // Admin-specific methods

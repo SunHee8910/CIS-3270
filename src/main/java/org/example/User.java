@@ -1,7 +1,5 @@
 package org.example;
 
-import org.example.Flight;
-
 import CodingLogicPackage.CodingLogic;
 
 import java.util.ArrayList;
@@ -18,7 +16,8 @@ public abstract class User {
     protected int ssn = 0;
     protected String recoveryAnswer = "Unknown";
     protected boolean isAdmin = false;
-    protected ArrayList<Flight> flights = new ArrayList<>();
+    private ArrayList<Flight> bookedFlights;
+
 
     public User() {}
 
@@ -80,13 +79,15 @@ public abstract class User {
         return isAdmin;
     }
 
-    public ArrayList<Flight> getFlights() {
-        return flights;
+    public void addFlight(Flight flight) {
+        bookedFlights.add(flight);
+    }
+
+    public ArrayList<Flight> getBookedFlights() {
+        return bookedFlights;
     }
 
 
-
-    // Setters
     public void setCustomerName(String customerName) {
         this.customerName = customerName;
     }
