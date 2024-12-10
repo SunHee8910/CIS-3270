@@ -23,6 +23,7 @@ import Database.FlightDBQuery.*;
 import org.example.Flight;
 
 import static CodingLogicPackage.CodingLogic.generateFlightID;
+import static CodingLogicPackage.CodingLogic.generateUserID;
 
 public class GUI extends Application {
     Stage stage;
@@ -389,10 +390,12 @@ public class GUI extends Application {
                     errorMessages.get(i).setManaged(true);
                 }
                 else if ( i == errorMessages.size() - 1 && errorMessages.get(i).getText().isBlank()) {
+
                     try {
+                        int customerid = generateUserID(1);
                         Connection connection = myJDBC.getConnection();
                         Statement statement = connection.createStatement();
-                        String sql = "INSERT INTO customers (customerName, passWord, Address, Zip /*, username, Password, Email, SSN, RecoveryAnswer*/) VALUES ('" + firstName + " " + lastName + "', '" + password + "', '" + address + "', '" + zip + "' )";/*+ state + "', '" + "', '" + email + "', '" + ssn + "', '" + question + "'*/
+                        String sql = "INSERT INTO customers (customerID, customerName, password, address, zip, state, email, ssn, recoveryAnswer) VALUES ('" + customerid + "', '" + firstName + " " + lastName + "', '" + password + "', '" + address + "', '" + zip + "', '" + state + "', '" + email + "', '" + ssn + "', '" + question + "')";
                         statement.executeUpdate(sql);
                         this.stage.setScene(getUserScreen());
                     }
