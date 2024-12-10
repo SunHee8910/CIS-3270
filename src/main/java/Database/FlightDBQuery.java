@@ -78,48 +78,84 @@ public class FlightDBQuery {
 
 
     public boolean bookFlight(String username, Flight flight) {
-        try (Connection connection = myJDBC.getConnection();
-             Statement statement = connection.createStatement()) {
+        try (Connection connection = myJDBC.getConnection()) {
 
-            // Step 1: Check flight capacity
-            String capacityCheckSql = "SELECT ticketsRemaining FROM flights WHERE ticketID = " + flight.getTicketID();
-            ResultSet capacityResult = statement.executeQuery(capacityCheckSql);
+            // Get the userid from username
+            String getUserIDSql = "SELECT userID FROM users WHERE username = ?";
+            try (PreparedStatement userStmt = connection.prepareStatement(getUserIDSql)) {
+                userStmt.setString(1, username);
+                ResultSet userResult = userStmt.executeQuery();
 
-            if (capacityResult.next()) {
-                int ticketsRemaining = capacityResult.getInt("ticketsRemaining");
-
-                if (ticketsRemaining <= 0) {
-                    System.out.println("This flight is fully booked. Cannot book this flight.");
+                if (!userResult.next()) {
+                    System.out.println("User not found.");
                     return false;
                 }
-            } else {
-                System.out.println("Flight not found. Please check the flight ID.");
-                return false;
+
+                int userID = userResult.getInt("userID");
+
+                //Check flight capacity
+                String capacityCheckSql = "SELECT ticketsRemaining FROM flights WHERE ticketID = ?";
+                try (PreparedStatement capacityStmt = connection.prepareStatement(capacityCheckSql)) {
+                    capacityStmt.setInt(1, flight.getTicketID());
+                    ResultSet capacityResult = capacityStmt.executeQuery();
+
+                    if (!capacityResult.next()) {
+                        System.out.println("Flight not found.");
+                        return false;
+                    }
+
+                    int ticketsRemaining = capacityResult.getInt("ticketsRemaining");
+
+                    if (ticketsRemaining <= 0) {
+                        System.out.println("This flight is fully booked.");
+                        return false;
+                    }
+                }
+
+                // Prevent duplicate bookings
+                String duplicateCheckSql = "SELECT COUNT(*) AS total FROM bookings WHERE userID = ? AND ticketID = ?";
+                try (PreparedStatement duplicateStmt = connection.prepareStatement(duplicateCheckSql)) {
+                    duplicateStmt.setInt(1, userID);
+                    duplicateStmt.setInt(2, flight.getTicketID());
+                    ResultSet duplicateResult = duplicateStmt.executeQuery();
+
+                    if (duplicateResult.next() && duplicateResult.getInt("total") > 0) {
+                        System.out.println("You have already booked this flight.");
+                        return false;
+                    }
+                }
+
+                //Insert booking and update flight capacity
+                connection.setAutoCommit(false); // Start transaction
+
+                String bookFlightSql = "INSERT INTO bookings (userID, ticketID) VALUES (?, ?)";
+                try (PreparedStatement bookStmt = connection.prepareStatement(bookFlightSql)) {
+                    bookStmt.setInt(1, userID);
+                    bookStmt.setInt(2, flight.getTicketID());
+                    bookStmt.executeUpdate();
+                }
+
+                String updateCapacitySql = "UPDATE flights SET ticketsRemaining = ticketsRemaining - 1 WHERE ticketID = ?";
+                try (PreparedStatement updateStmt = connection.prepareStatement(updateCapacitySql)) {
+                    updateStmt.setInt(1, flight.getTicketID());
+                    updateStmt.executeUpdate();
+                }
+
+                connection.commit(); // Commit transaction
+                System.out.println("Flight successfully booked for user: " + username);
+                return true;
+
+            } catch (Exception e) {
+                connection.rollback(); // Rollback transaction on error
+                throw e;
             }
-
-            // Step 2: Prevent duplicate bookings (assuming username is stored in another tracking table)
-            String duplicateCheckSql = "SELECT COUNT(*) AS total FROM flights WHERE ticketID = " +
-                    flight.getTicketID() + " AND bookedByUsername = '" + username + "'";
-            ResultSet duplicateResult = statement.executeQuery(duplicateCheckSql);
-
-            if (duplicateResult.next() && duplicateResult.getInt("total") > 0) {
-                System.out.println("You have already booked this flight.");
-                return false;
-            }
-
-            // Step 3: Update flight to mark it as booked by the user
-            String bookFlightSql = "UPDATE flights SET ticketsRemaining = ticketsRemaining - 1, " +
-                    "bookedByUsername = '" + username + "' WHERE ticketID = " + flight.getTicketID();
-            statement.executeUpdate(bookFlightSql);
-
-            System.out.println("Flight successfully booked for user: " + username);
-            return true;
 
         } catch (Exception e) {
             System.err.println("Error booking flight: " + e.getMessage());
             return false;
         }
     }
+
 
     // method to get the users bookedflights
     public HashMap<Integer, Flight> getUserBookedFlights(String username) {
