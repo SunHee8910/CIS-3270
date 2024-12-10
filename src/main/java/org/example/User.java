@@ -10,6 +10,7 @@ public abstract class User {
     protected String email = "Unknown";
     protected int ssn = 0;
     protected String recoveryAnswer = "Unknown";
+    protected boolean isAdmin = false;
 
     public User() {}
 
@@ -26,13 +27,15 @@ public abstract class User {
         this.recoveryAnswer = recoveryAnswer;
     }
 
-    // Common methods
-    public boolean login(String username, String password) {
-        return this.username.equals(username) && this.password.equals(password);
+    public boolean validateRecoveryAnswer(String answer) {
+        return this.recoveryAnswer.equalsIgnoreCase(answer);
     }
 
-    public boolean recoverPassword(String recoveryAnswer) {
-        return this.recoveryAnswer.equalsIgnoreCase(recoveryAnswer);
+    // Method to retrieve password (if the recovery answer is correct)
+    public String retrievePassword(String answer) {
+        if (validateRecoveryAnswer(answer)) {
+            return this.password;
+        }
+        return "incorrect password, try again";
     }
-
 }
