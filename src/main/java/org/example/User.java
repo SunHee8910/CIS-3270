@@ -2,7 +2,7 @@ package org.example;
 
 import CodingLogicPackage.CodingLogic;
 
-public class User {
+public abstract class User {
     protected int userID = 0;
     protected String customerName = "Unknown";
     protected String password = "Unknown";
