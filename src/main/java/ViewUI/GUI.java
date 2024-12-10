@@ -2,6 +2,8 @@ package ViewUI;
 
 import Database.myJDBC;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -19,11 +21,9 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import Database.FlightDBQuery.*;
-import org.example.Flight;
-
-import static CodingLogicPackage.CodingLogic.generateFlightID;
-import static CodingLogicPackage.CodingLogic.generateUserID;
+import static CodingLogicPackage.CodingLogic.*;
+import static Database.myJDBC.createCustomerQuery;
+import static Database.myJDBC.getIsUsernameUniqueQuery;
 
 public class GUI extends Application {
     Stage stage;
@@ -143,21 +143,16 @@ public class GUI extends Application {
         });
 
 
-        root.getChildren().addAll(
-                text,
-                new Label("Username"), usernameTextField, usernameError,
-                new Label("Password"), passwordTextField, passwordError,
-                signInError,
-                new HBox(5, backButton, loginButton));
+        root.getChildren().addAll(text, new Label("Username"), usernameTextField, usernameError, new Label("Password"), passwordTextField, passwordError, signInError, new HBox(5, backButton, loginButton));
         return new Scene(root, 800, 800);
     }
 
-    public Scene getUserScreen(){
+    public Scene getUserScreen() {
         Text text = new Text("✈️ User Screen ");
         text.setFont(Font.font("System", FontWeight.BOLD, 22));
         Button backButton = new Button("Back");
         Button searchFlights = new Button("Search for Flights");
-        Button viewFlights = new Button ("View Booked Flights");
+        Button viewFlights = new Button("View Booked Flights");
 
         searchFlights.setOnAction(e -> {
             this.stage.setScene(getSearchFlights());
@@ -170,13 +165,7 @@ public class GUI extends Application {
         });
         VBox root = new VBox(5);
         root.setPadding(new Insets(10));
-        root.getChildren().addAll(
-                text,
-                new VBox(10,
-                        new VBox (new Label("Search for Flights"), searchFlights),
-                        new VBox (new Label("View Booked Flights"), viewFlights),
-                        backButton
-                )
+        root.getChildren().addAll(text, new VBox(10, new VBox(new Label("Search for Flights"), searchFlights), new VBox(new Label("View Booked Flights"), viewFlights), backButton)
 
         );
         ScrollPane scroll = new ScrollPane(root);
@@ -186,7 +175,7 @@ public class GUI extends Application {
         return new Scene(root, 800, 800);
     }
 
-    public Scene getSearchFlights(){
+    public Scene getSearchFlights() {
         Text text = new Text("✈️ Search for Flights ");
         text.setFont(Font.font("System", FontWeight.BOLD, 22));
         Button backButton = new Button("Back");
@@ -214,31 +203,17 @@ public class GUI extends Application {
 
                 }
                 resultlist.setText(results.toString());
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
         });
-        book.setOnAction(b ->{
-
+        book.setOnAction(b -> {
 
 
         });
         VBox root = new VBox(5);
         root.setPadding(new Insets(10));
-        root.getChildren().addAll(
-                text,
-                new VBox(5,
-                        new VBox (new Label("Departure City"), departureCity),
-                        new VBox (new Label("Arrival City"), arrivalCity),
-                        new VBox (new Label("Departure Date"), departureDate),
-                        new VBox (new Label("Arrival Date"), arrivalDate),
-                        new VBox (new Label("Departure Time"), departureTime),
-                        new VBox (new Label("Arrival Time"), arrivalTime),
-                        searchFlights,
-                        backButton
-                )
-        );
+        root.getChildren().addAll(text, new VBox(5, new VBox(new Label("Departure City"), departureCity), new VBox(new Label("Arrival City"), arrivalCity), new VBox(new Label("Departure Date"), departureDate), new VBox(new Label("Arrival Date"), arrivalDate), new VBox(new Label("Departure Time"), departureTime), new VBox(new Label("Arrival Time"), arrivalTime), searchFlights, backButton));
         ScrollPane scroll = new ScrollPane(root);
         scroll.setFitToHeight(true);
         scroll.setFitToWidth(true);
@@ -247,7 +222,7 @@ public class GUI extends Application {
 
     }
 
-    public Scene getViewFlights(){
+    public Scene getViewFlights() {
         Text text = new Text("✈️ View Booked Flights ");
         text.setFont(Font.font("System", FontWeight.BOLD, 22));
         Button backButton = new Button("Back");
@@ -267,14 +242,9 @@ public class GUI extends Application {
         });
         VBox root = new VBox(5);
         root.setPadding(new Insets(10));
-        root.getChildren().addAll(
-                text,
-                new VBox(5,
-                      //  new VBox (new Label("Username"), username),
-                        viewFlights,
-                        backButton
-                )
-        );
+        root.getChildren().addAll(text, new VBox(5,
+                //  new VBox (new Label("Username"), username),
+                viewFlights, backButton));
         ScrollPane scroll = new ScrollPane(root);
         scroll.setFitToHeight(true);
         scroll.setFitToWidth(true);
@@ -375,69 +345,48 @@ public class GUI extends Application {
             }
             if (username.isBlank()) {
                 usernameTextFieldError.setText("Username is required");
-            }
-            // check username is unique
-            boolean usernameIsTaken = false;
-            if (usernameIsTaken) {
+            } else if (getIsUsernameUniqueQuery(username)) {
                 usernameTextFieldError.setText("This username is taken, please enter a unique username");
             }
+
             if (password.isBlank()) {
                 passwordFieldError.setText("Password is required");
+            } else if (!isValidPassword(password)) {
+                passwordFieldError.setText("Password must contain a number, uppercase, lowercase, and symbol characters.");
             }
+
             if (email.isBlank()) {
                 emailFieldError.setText("Email is required");
-            }
-            if (!email.isBlank() && !email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+            } else if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
                 emailFieldError.setText("Email address must be in \"user@mail.com\" format");
             }
+
             if (ssn.isBlank()) {
                 ssnFieldError.setText("SSN is required");
+            }
+            if (!ssn.isBlank() && !ssn.matches("^[0-9]{9}$")) {
+                ssnFieldError.setText("SSN must be in the format: 123456789");
             }
             if (question.isBlank()) {
                 questionFieldError.setText("Question is required");
             }
 
+            boolean hasError = false;
             for (int i = 0; i < errorMessages.size(); i++) {
                 if (!errorMessages.get(i).getText().isBlank()) {
                     errorMessages.get(i).setManaged(true);
-                }
-                else if ( i == errorMessages.size() - 1 && errorMessages.get(i).getText().isBlank()) {
-
-                    try {
-                        int customerid = generateUserID(1);
-                        Connection connection = myJDBC.getConnection();
-                        Statement statement = connection.createStatement();
-                        String sql = "INSERT INTO customers (customerID, customerName, password, address, zip, state, email, ssn, recoveryAnswer) VALUES ('" + customerid + "', '" + firstName + " " + lastName + "', '" + password + "', '" + address + "', '" + zip + "', '" + state + "', '" + email + "', '" + ssn + "', '" + question + "')";
-                        statement.executeUpdate(sql);
-                        this.stage.setScene(getUserScreen());
-                    }
-                    catch (Exception ex) {
-                        throw new RuntimeException(ex);
-                    }
+                    hasError = true;
                 }
             }
-
-
-
+            if (!hasError) {
+                boolean isSuccessful = createCustomerQuery(firstName, lastName, password, address, zip, state, email, Integer.parseInt(ssn), question,username);
+                if (isSuccessful) {
+                    this.stage.setScene(getUserScreen());
+                }
+            }
         });
 
-
-        root.getChildren().addAll(
-                text,
-                new VBox(10,
-                        new VBox(new Label("First Name"), firstNameField, firstNameError),
-                        new VBox(new Label("Last Name"), lastNameField, lastNameError),
-                        new VBox(new Label("Address"), addressField, addressFieldError),
-                        new VBox(new Label("Zip Code"), zipField, zipFieldError),
-                        new VBox(new Label("State"), stateField, stateFieldError),
-                        new VBox(new Label("Username"), usernameTextField, usernameTextFieldError),
-                        new VBox(new Label("Password"), passwordField, passwordFieldError),
-                        new VBox(new Label("Email Address"), emailField, emailFieldError),
-                        new VBox(new Label("SSN"), ssnField, ssnFieldError),
-                        new VBox(new Label("Recovery Answer"), questionField, questionFieldError),
-                        new VBox(new HBox(5, backButton, loginButton))
-                )
-        );
+        root.getChildren().addAll(text, new VBox(10, new VBox(new Label("First Name"), firstNameField, firstNameError), new VBox(new Label("Last Name"), lastNameField, lastNameError), new VBox(new Label("Address"), addressField, addressFieldError), new VBox(new Label("Zip Code"), zipField, zipFieldError), new VBox(new Label("State"), stateField, stateFieldError), new VBox(new Label("Username"), usernameTextField, usernameTextFieldError), new VBox(new Label("Password"), passwordField, passwordFieldError), new VBox(new Label("Email Address"), emailField, emailFieldError), new VBox(new Label("SSN"), ssnField, ssnFieldError), new VBox(new Label("Recovery Answer"), questionField, questionFieldError), new VBox(new HBox(5, backButton, loginButton))));
 
         ScrollPane scroll = new ScrollPane(root);
         scroll.setFitToHeight(true);
@@ -525,14 +474,7 @@ public class GUI extends Application {
         });
 
 
-        root.getChildren().addAll(
-                text,
-                new VBox(5,
-                        new VBox(new Label("Username"), usernameTextField, usernameError),
-                        new VBox(new Label("Password"), passwordTextField, passwordError),
-                        new VBox(new Label("Admin Code"), admincodeTextField, admincodeError),
-                        signInError,
-                        new HBox(5, backButton, loginButton)));
+        root.getChildren().addAll(text, new VBox(5, new VBox(new Label("Username"), usernameTextField, usernameError), new VBox(new Label("Password"), passwordTextField, passwordError), new VBox(new Label("Admin Code"), admincodeTextField, admincodeError), signInError, new HBox(5, backButton, loginButton)));
 
         return new Scene(root, 800, 800);
 
@@ -560,18 +502,11 @@ public class GUI extends Application {
         });
         VBox root = new VBox(5);
         root.setPadding(new Insets(10));
-        root.getChildren().addAll(
-                text,
-                new VBox(5,
-                        createFlight,
-                        deleteFlight,
-                        updateFlight,
-                        backButton
-                )
-        );
+        root.getChildren().addAll(text, new VBox(5, createFlight, deleteFlight, updateFlight, backButton));
         return new Scene(root, 800, 800);
     }
-    public Scene getCreateFlight(){
+
+    public Scene getCreateFlight() {
         Text text = new Text("✈️ Create Flight ");
         text.setFont(Font.font("System", FontWeight.BOLD, 22));
         Button backButton = new Button("Back");
@@ -600,31 +535,17 @@ public class GUI extends Application {
                 if (statement.executeUpdate(sql) > 0) {
                     new Label("Flight created successfully");
                 }
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
         });
         VBox root = new VBox(5);
         root.setPadding(new Insets(10));
-        root.getChildren().addAll(
-                text,
-                new VBox(5,
-                        new VBox (new Label("Departure City"), departureCity),
-                        new VBox (new Label("Arrival City"), arrivalCity),
-                        new VBox (new Label("Departure Date"), departureDate),
-                        new VBox (new Label("Arrival Date"), arrivalDate),
-                        new VBox (new Label("Departure Time"), departureTime),
-                        new VBox (new Label("Arrival Time"), arrivalTime),
-                        new VBox (new Label("Ticket ID"), ticketsRemaining),
-                        new VBox (new Label("Ticket Price"), ticketPrice),
-                        createFlight,
-                        backButton
-                )
-        );
+        root.getChildren().addAll(text, new VBox(5, new VBox(new Label("Departure City"), departureCity), new VBox(new Label("Arrival City"), arrivalCity), new VBox(new Label("Departure Date"), departureDate), new VBox(new Label("Arrival Date"), arrivalDate), new VBox(new Label("Departure Time"), departureTime), new VBox(new Label("Arrival Time"), arrivalTime), new VBox(new Label("Ticket ID"), ticketsRemaining), new VBox(new Label("Ticket Price"), ticketPrice), createFlight, backButton));
         return new Scene(root, 800, 800);
     }
-    public Scene getDeleteFlight(){
+
+    public Scene getDeleteFlight() {
         Text text = new Text("✈️ Delete Flight ");
         text.setFont(Font.font("System", FontWeight.BOLD, 22));
         Button backButton = new Button("Back");
@@ -639,24 +560,17 @@ public class GUI extends Application {
                 Statement statement = connection.createStatement();
                 String sql = "DELETE FROM flights WHERE flightNumber = " + flightNumber.getText();
                 statement.executeUpdate(sql);
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
         });
         VBox root = new VBox(5);
         root.setPadding(new Insets(10));
-        root.getChildren().addAll(
-                text,
-                new VBox(5,
-                        new VBox (new Label("Flight Number"), flightNumber),
-                        deleteFlight,
-                        backButton
-                )
-        );
+        root.getChildren().addAll(text, new VBox(5, new VBox(new Label("Flight Number"), flightNumber), deleteFlight, backButton));
         return new Scene(root, 800, 800);
     }
-    public Scene getUpdateFlight(){
+
+    public Scene getUpdateFlight() {
         Text text = new Text("✈️ Update Flight ");
         text.setFont(Font.font("System", FontWeight.BOLD, 22));
         Button backButton = new Button("Back");
@@ -675,22 +589,20 @@ public class GUI extends Application {
 
         Button updateFlight = new Button("Update Flight");
         updateFlight.setOnAction(e -> {
-            try{
+            try {
                 Connection connection = myJDBC.getConnection();
                 Statement statement = connection.createStatement();
                 ResultSet resultset = statement.executeQuery("SELECT * FROM flights WHERE flightNumber = " + flightNumber.getText());
-                if (resultset.next()){
+                if (resultset.next()) {
                     try {
                         Connection connection1 = myJDBC.getConnection();
                         Statement statement1 = connection.createStatement();
                         String sql = "UPDATE flights SET departureCity = " + departureCity.getText() + ", arrivalCity = " + arrivalCity.getText() + ", departureDate = " + departureDate.getText() + ", arrivalDate = " + arrivalDate.getText() + ", departureTime = " + departureTime.getText() + ", arrivalTime = " + arrivalTime.getText() + ", ticketID = " + ticketID.getText() + ", ticketPrice = " + ticketPrice.getText() + " WHERE flightNumber = " + flightNumber.getText();
                         statement1.executeUpdate(sql);
-                    }
-                    catch (Exception ex) {
+                    } catch (Exception ex) {
                         throw new RuntimeException(ex);
                     }
-                }
-                else{
+                } else {
                     new Label("Flight does not exist");
                 }
             } catch (Exception ex) {
@@ -701,22 +613,7 @@ public class GUI extends Application {
         });
         VBox root = new VBox(5);
         root.setPadding(new Insets(10));
-        root.getChildren().addAll(
-                text,
-                new VBox(5,
-                        new VBox (new Label("Flight Number"), flightNumber),
-                        new VBox (new Label("Departure City"), departureCity),
-                        new VBox (new Label("Arrival City"), arrivalCity),
-                        new VBox (new Label("Departure Date"), departureDate),
-                        new VBox (new Label("Arrival Date"), arrivalDate),
-                        new VBox (new Label("Departure Time"), departureTime),
-                        new VBox (new Label("Arrival Time"), arrivalTime),
-                        new VBox (new Label("Ticket ID"), ticketID),
-                        new VBox (new Label("Ticket Price"), ticketPrice),
-                        updateFlight,
-                        backButton
-                )
-        );
+        root.getChildren().addAll(text, new VBox(5, new VBox(new Label("Flight Number"), flightNumber), new VBox(new Label("Departure City"), departureCity), new VBox(new Label("Arrival City"), arrivalCity), new VBox(new Label("Departure Date"), departureDate), new VBox(new Label("Arrival Date"), arrivalDate), new VBox(new Label("Departure Time"), departureTime), new VBox(new Label("Arrival Time"), arrivalTime), new VBox(new Label("Ticket ID"), ticketID), new VBox(new Label("Ticket Price"), ticketPrice), updateFlight, backButton));
         return new Scene(root, 800, 800);
     }
 }

@@ -53,4 +53,29 @@ public class CodingLogic {
         }
         return useriD;
     }
+
+    public static boolean isValidPassword(String password) {
+        if (password == null || password.length() < 4) {
+            return false;
+        }
+
+        boolean hasNumber = false;
+        boolean hasLowercase = false;
+        boolean hasUppercase = false;
+        boolean hasSymbol = false;
+
+        for (char ch : password.toCharArray()) {
+            if (Character.isDigit(ch)) {
+                hasNumber = true;
+            } else if (Character.isLowerCase(ch)) {
+                hasLowercase = true;
+            } else if (Character.isUpperCase(ch)) {
+                hasUppercase = true;
+            } else if (!Character.isLetterOrDigit(ch) && !Character.isWhitespace(ch)) {
+                hasSymbol = true;
+            }
+        }
+
+        return hasNumber && hasLowercase && hasUppercase && hasSymbol;
+    }
 }
