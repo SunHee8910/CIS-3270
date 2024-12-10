@@ -1,27 +1,45 @@
 package org.example;
 
+import Database.myJDBC;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
+import org.example.Flight;
+
 
 //public class conflict75 {
-//       interface NoConflict {
-//           public static boolean NoConflict(){
+//    for(int i = 0; i < bookedFlightsIDs.length; i++) {
+//        boolean timeConflict = false;
+//        try{
+//            Connection connection = myJDBC.getConnection();
+//            Statement statement = connection.createStatement();
 //
-//               if (flight.ArrivalDate == newflight.DepartureDate){
-//                   if (flight.ArrivalTime - 15 > newflight.DepartureTime && flight.arrivalCity == newflight.departureCity){
-//                       return true;
-//                   }
-//               }
-//                return false;
+//            ResultSet resultSet = "SELECT * FROM flights WHERE flightID = " + bookedFlightsIDs[i];
+//            while(resultSet.next()){
+//                if (Integer.parseInt(resultSet.getString("departureTime")) - Integer.parseInt(resultSet.getString("arrivalTime")) < 10){
+//                    Label label = new Label("Time Conflict");
+//                    timeConflict = true;
+//                }
+//                if (resultSet.getString("arrivalDate").equals(departureDate) && resultSet.getString("departureCity").equals(departureCity) && resultSet.getString("arrivalCity").equals(arrivalCity)){
+//                    Label label = new Label("Location Conflict");
+//                    timeConflict = true;
+//                }
+//                if (resultSet.getString("departureDate").equals(departureDate) && resultSet.getString("departureCity").equals(departureCity) && resultSet.getString("arrivalCity").equals(arrivalCity)){
+//                    Label label = new Label("Location Conflict");
+//                    timeConflict = true;
+//                }
 //
-//           }
-//           public static boolean CantBook(){
-//           if (flight.ArrivalDate == newFlight.DepartureDate && newflight.DepartureTime - flight.arrivalTime < 15){
-//               return true;
-//           }
-//              return false;
-//       }
+//            }
+//        }
+//        catch(Exception e){
+//            System.out.println("Error: " + e);
+//        }
+//    }
+//
 //
 //
 //}

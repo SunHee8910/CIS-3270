@@ -125,6 +125,20 @@ public class GUI extends Application {
                     errorMessages.get(i).setManaged(true);
                 }
             }
+            try {
+                Connection connection = myJDBC.getConnection();
+                Statement statement = connection.createStatement();
+
+                ResultSet resultSet = statement.executeQuery("Select * from users where username = " + usernameTextField.getText() + "and password = " + passwordTextField.getText());
+                if (resultSet.next()) {
+                    this.stage.setScene(getUserScreen());
+                } else {
+                    this.stage.setScene(getLoginScene());
+                    new Label("Invalid username or password");
+                }
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
         });
 
 
@@ -134,6 +148,124 @@ public class GUI extends Application {
                 new Label("Password"), passwordTextField, passwordError,
                 signInError,
                 new HBox(5, backButton, loginButton));
+        return new Scene(root, 800, 800);
+    }
+
+    public Scene getUserScreen(){
+        Text text = new Text("✈️ User Screen ");
+        text.setFont(Font.font("System", FontWeight.BOLD, 22));
+        Button backButton = new Button("Back");
+        Button searchFlights = new Button("Search for Flights");
+        Button viewFlights = new Button ("View Booked Flights");
+
+        searchFlights.setOnAction(e -> {
+            this.stage.setScene(getSearchFlights());
+        });
+        viewFlights.setOnAction(e -> {
+            this.stage.setScene(getViewFlights());
+        });
+        backButton.setOnAction(e -> {
+            this.stage.setScene(this.startScene);
+        });
+        VBox root = new VBox(5);
+        root.setPadding(new Insets(10));
+        root.getChildren().addAll(
+                text,
+                new VBox(10,
+                        new VBox (new Label("Search for Flights"), searchFlights),
+                        new VBox (new Label("View Booked Flights"), viewFlights),
+                        backButton
+                )
+
+        );
+        ScrollPane scroll = new ScrollPane(root);
+        scroll.setFitToHeight(true);
+        scroll.setFitToWidth(true);
+
+        return new Scene(root, 800, 800);
+    }
+
+    public Scene getSearchFlights(){
+        Text text = new Text("✈️ Search for Flights ");
+        text.setFont(Font.font("System", FontWeight.BOLD, 22));
+        Button backButton = new Button("Back");
+        backButton.setOnAction(e -> {
+            this.stage.setScene(this.startScene);
+        });
+        TextField departureCity = new TextField();
+        TextField arrivalCity = new TextField();
+        TextField departureDate = new TextField();
+        TextField arrivalDate = new TextField();
+        TextField departureTime = new TextField();
+        TextField arrivalTime = new TextField();
+        Button searchFlights = new Button("Search Flights");
+        searchFlights.setOnAction(e -> {
+
+            try {
+                Connection connection = myJDBC.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery("SELECT * FROM flights WHERE departureCity = " + departureCity.getText() + "AND arrivalCity = " + arrivalCity.getText() + "AND departureDate = " + departureDate.getText() + "AND arrivalDate = " + arrivalDate.getText() + "AND departureTime = " + departureTime.getText() + "AND arrivalTime = " + arrivalTime.getText());
+            }
+            catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        VBox root = new VBox(5);
+        root.setPadding(new Insets(10));
+        root.getChildren().addAll(
+                text,
+                new VBox(5,
+                        new VBox (new Label("Departure City"), departureCity),
+                        new VBox (new Label("Arrival City"), arrivalCity),
+                        new VBox (new Label("Departure Date"), departureDate),
+                        new VBox (new Label("Arrival Date"), arrivalDate),
+                        new VBox (new Label("Departure Time"), departureTime),
+                        new VBox (new Label("Arrival Time"), arrivalTime),
+                        searchFlights,
+                        backButton
+                )
+        );
+        ScrollPane scroll = new ScrollPane(root);
+        scroll.setFitToHeight(true);
+        scroll.setFitToWidth(true);
+
+        return new Scene(root, 800, 800);
+
+    }
+
+    public Scene getViewFlights(){
+        Text text = new Text("✈️ View Booked Flights ");
+        text.setFont(Font.font("System", FontWeight.BOLD, 22));
+        Button backButton = new Button("Back");
+        backButton.setOnAction(e -> {
+            this.stage.setScene(this.startScene);
+        });
+        TextField username = new TextField();
+        Button viewFlights = new Button("View Flights");
+        viewFlights.setOnAction(e -> {
+            try {
+                Connection connection = myJDBC.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery("SELECT * FROM flights WHERE username = " + username.getText());
+            }
+            catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        VBox root = new VBox(5);
+        root.setPadding(new Insets(10));
+        root.getChildren().addAll(
+                text,
+                new VBox(5,
+                        new VBox (new Label("Username"), username),
+                        viewFlights,
+                        backButton
+                )
+        );
+        ScrollPane scroll = new ScrollPane(root);
+        scroll.setFitToHeight(true);
+        scroll.setFitToWidth(true);
+
         return new Scene(root, 800, 800);
     }
 
@@ -350,7 +482,7 @@ public class GUI extends Application {
                 Connection connection = myJDBC.getConnection();
                 Statement statement = connection.createStatement();
 
-                ResultSet resultSet = statement.executeQuery("Select" + passwordTextField.getText() + "from users where username = " + usernameTextField.getText());
+                ResultSet resultSet = statement.executeQuery("Select * from users where username = " + usernameTextField.getText() + "and adminCode = " + admincodeTextField.getText() + "and password = " + passwordTextField.getText());
                 if (resultSet.next()) {
                     this.stage.setScene(getAdminScreen());
                 } else {
