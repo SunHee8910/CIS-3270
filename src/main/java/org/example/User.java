@@ -1,6 +1,9 @@
 package org.example;
 
+import CodingLogicPackage.CodingLogic;
+
 public abstract class User {
+    protected int userID = 0;
     protected String customerName = "Unknown";
     protected String password = "Unknown";
     protected String address = "Unknown";
@@ -16,6 +19,7 @@ public abstract class User {
 
     public User(String customerName, String password, String address, String zip, String state,
                 String username, String email, int ssn, String recoveryAnswer) {
+        this.userID = CodingLogic.generateUserID(); // Assign unique ID here
         this.customerName = customerName;
         this.password = password;
         this.address = address;

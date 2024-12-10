@@ -56,7 +56,7 @@ public class FlightDBQuery {
              Statement statement = connection.createStatement()) {
 
             // Construct SQL to delete the flight booking
-            String sql = "DELETE FROM bookings WHERE " +
+            String sql = "DELETE FROM flights WHERE " +
                     "username = '" + username + "' AND " +
                     "ticketID = '" + flight.getTicketID() + "'";
 
@@ -81,27 +81,38 @@ public class FlightDBQuery {
         try (Connection connection = myJDBC.getConnection();
              Statement statement = connection.createStatement()) {
 
-            // Check if flight is already booked
-            String checkSql = "SELECT COUNT(*) AS total FROM bookings WHERE " +
-                    "username = '" + username + "' AND " +
-                    "ticketID = '" + flight.getTicketID() + "'";
-            ResultSet resultSet = statement.executeQuery(checkSql);
+            // Step 1: Check flight capacity
+            String capacityCheckSql = "SELECT ticketsRemaining FROM flights WHERE ticketID = " + flight.getTicketID();
+            ResultSet capacityResult = statement.executeQuery(capacityCheckSql);
 
-            resultSet.next();
-            int count = resultSet.getInt("total");
+            if (capacityResult.next()) {
+                int ticketsRemaining = capacityResult.getInt("ticketsRemaining");
 
-            if (count > 0) {
-                System.out.println("Flight with ticket ID " + flight.getTicketID() + " is already booked by user " + username + ".");
+                if (ticketsRemaining <= 0) {
+                    System.out.println("This flight is fully booked. Cannot book this flight.");
+                    return false;
+                }
+            } else {
+                System.out.println("Flight not found. Please check the flight ID.");
                 return false;
             }
 
-            // Insert the booking
-            String insertSql = "INSERT INTO bookings (username, ticketID) VALUES (" +
-                    "'" + username + "', " +
-                    "'" + flight.getTicketID() + "')";
-            statement.executeUpdate(insertSql);
+            // Step 2: Prevent duplicate bookings (assuming username is stored in another tracking table)
+            String duplicateCheckSql = "SELECT COUNT(*) AS total FROM flights WHERE ticketID = " +
+                    flight.getTicketID() + " AND bookedByUsername = '" + username + "'";
+            ResultSet duplicateResult = statement.executeQuery(duplicateCheckSql);
 
-            System.out.println("Flight with ticket ID " + flight.getTicketID() + " successfully booked for user " + username + ".");
+            if (duplicateResult.next() && duplicateResult.getInt("total") > 0) {
+                System.out.println("You have already booked this flight.");
+                return false;
+            }
+
+            // Step 3: Update flight to mark it as booked by the user
+            String bookFlightSql = "UPDATE flights SET ticketsRemaining = ticketsRemaining - 1, " +
+                    "bookedByUsername = '" + username + "' WHERE ticketID = " + flight.getTicketID();
+            statement.executeUpdate(bookFlightSql);
+
+            System.out.println("Flight successfully booked for user: " + username);
             return true;
 
         } catch (Exception e) {
@@ -110,15 +121,53 @@ public class FlightDBQuery {
         }
     }
 
+    // method to get the users bookedflights
+    public HashMap<Integer, Flight> getUserBookedFlights(String username) {
+        HashMap<Integer, Flight> bookedFlights = new HashMap<>();
+
+        try {
+            Connection connection = myJDBC.getConnection();
+            Statement statement = connection.createStatement();
+
+            // SQL query to fetch flights associated with the user
+            String sql = "SELECT * FROM flights WHERE userID = (SELECT userID FROM users WHERE username = '" + username + "')";
+            ResultSet resultSet = statement.executeQuery(sql);
+
+            while (resultSet.next()) {
+                int ticketID = resultSet.getInt("ticketID");
+                Flight flight = new Flight(
+                        resultSet.getString("departureCity"),
+                        resultSet.getString("arrivalCity"),
+                        resultSet.getString("departureDate"),
+                        resultSet.getString("arrivalDate"),
+                        resultSet.getString("departureTime"),
+                        resultSet.getString("arrivalTime")
+                );
+                flight.setTicketsRemaining(resultSet.getInt("ticketsRemaining"));
+                bookedFlights.put(ticketID, flight);
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+        } catch (Exception e) {
+            System.out.println("Error while getting booked flights: " + e.getMessage());
+        }
+
+        return bookedFlights;
+    }
+
+
 
     // Search for flights based on criteria
     public HashMap<String, Flight> searchFlights(String departureCity, String arrivalCity, String departureDate, String departureTime) {
         HashMap<String, Flight> flights = new HashMap<>();
-        String sql = "SELECT * FROM Flight WHERE " +
-                "(departureCity = '" + departureCity + "' OR '" + departureCity + "' IS NULL) AND " +
-                "(arrivalCity = '" + arrivalCity + "' OR '" + arrivalCity + "' IS NULL) AND " +
-                "(departureDate = '" + departureDate + "' OR '" + departureDate + "' IS NULL) AND " +
-                "(departureTime = '" + departureTime + "' OR '" + departureTime + "' IS NULL)";
+        String sql = "SELECT * FROM Flights WHERE " +
+                "(departureCity = '" + departureCity + "' OR '" + departureCity + "' IS NULL OR departureCity IS NULL) AND " +
+                "(arrivalCity = '" + arrivalCity + "' OR '" + arrivalCity + "' IS NULL OR arrivalCity IS NULL) AND " +
+                "(departureDate = '" + departureDate + "' OR '" + departureDate + "' IS NULL OR departureDate IS NULL) AND " +
+                "(departureTime = '" + departureTime + "' OR '" + departureTime + "' IS NULL OR departureTime IS NULL)";
 
         try (Connection connection = myJDBC.getConnection();
              Statement statement = connection.createStatement();
@@ -135,11 +184,24 @@ public class FlightDBQuery {
                 );
                 flights.put(resultSet.getString("ticketID"), flight); // Use ticketID as the key
             }
+
+            if (flights.isEmpty()) {
+                System.out.println("No flights found matching the criteria.");
+            } else {
+                System.out.println("Flights found:");
+                for (String ticketID : flights.keySet()) {
+                    Flight f = flights.get(ticketID);
+                    System.out.printf("ID: %s | From: %s | To: %s | Date: %s | Time: %s\n",
+                            ticketID, f.getDepartureCity(), f.getArrivalCity(), f.getDepartureDate(), f.departureTime);
+                }
+            }
+
         } catch (Exception e) {
             System.err.println("Error searching flights: " + e.getMessage());
         }
 
         return flights;
     }
+
 
 }
