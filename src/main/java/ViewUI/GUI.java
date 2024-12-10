@@ -578,7 +578,7 @@ public class GUI extends Application {
         backButton.setOnAction(e -> {
             this.stage.setScene(this.getAdminScreen());
         });
-        TextField flightNumber = new TextField();
+
         TextField departureCity = new TextField();
         TextField arrivalCity = new TextField();
         TextField departureDate = new TextField();
@@ -590,11 +590,12 @@ public class GUI extends Application {
 
         Button createFlight = new Button("Create Flight");
         createFlight.setOnAction(e -> {
-            String flightNumbers = String.valueOf(generateFlightID(Integer.parseInt(flightNumber.getText())));
+            int flightNumbers = generateFlightID(1);
+            int ticketID = generateFlightID(1);
             try {
                 Connection connection = myJDBC.getConnection();
                 Statement statement = connection.createStatement();
-                String sql = "INSERT INTO flights (flightID, departureCity, arrivalCity, departureDate, arrivalDate, departureTime, arrivalTime, ticketsRemaining) VALUES ('" + flightNumbers + "', '" + departureCity.getText() + "', '" + arrivalCity.getText() + "', '" + departureDate.getText() + "', '" + arrivalDate.getText() + "', '" + departureTime.getText() + "', '" + arrivalTime.getText() + "', '" + ticketsRemaining.getText() + "')";
+                String sql = "INSERT INTO flights (flightID, departureCity, arrivalCity, departureDate, arrivalDate, departureTime, arrivalTime, ticketsRemaining, ticketID) VALUES ('" + flightNumbers + "', '" + departureCity.getText() + "', '" + arrivalCity.getText() + "', '" + departureDate.getText() + "', '" + arrivalDate.getText() + "', '" + departureTime.getText() + "', '" + arrivalTime.getText() + "', '" + ticketsRemaining.getText() + "', '" + ticketID + "')";
                 statement.executeUpdate(sql);
                 if (statement.executeUpdate(sql) > 0) {
                     new Label("Flight created successfully");
@@ -609,7 +610,6 @@ public class GUI extends Application {
         root.getChildren().addAll(
                 text,
                 new VBox(5,
-                        new VBox (new Label("Flight Number"), flightNumber),
                         new VBox (new Label("Departure City"), departureCity),
                         new VBox (new Label("Arrival City"), arrivalCity),
                         new VBox (new Label("Departure Date"), departureDate),
