@@ -17,7 +17,7 @@ public class FlightDBQuery {
 
             // Construct the SQL query using getters from the Flight object
             String sql = "INSERT INTO Flights " +
-                    "(flightID, departureCity, arrivalCity, departureDate, arrivalDate, departureTime, arrivalTime, ticketsRemaining, purchasedTicket) " +
+                    "(ticketID, departureCity, arrivalCity, departureDate, arrivalDate, departureTime, arrivalTime, ticketsRemaining, purchasedTicket) " +
                     "VALUES (" +
                     "'" + flight.getTicketID() + "', " +
                     "'" + flight.getDepartureCity() + "', " +

@@ -20,7 +20,7 @@ public class Flight{
     }
     // constructor when user is ready to book entire flight
     public Flight(String departureCity, String arrivalCity, String departureDate, String arrivalDate, String departureTime, String arrivalTime) {
-        this.ticketID = CodingLogic.generateFlightID(this.ticketID);
+        this.ticketID = CodingLogic.generateFlightID(50);
         this.purchasedTicket = true;
         this.departureCity = departureCity;
         this.arrivalCity = arrivalCity;
@@ -29,6 +29,7 @@ public class Flight{
         this.departureTime = departureTime;
         this.arrivalTime = arrivalTime;
         flightsBooked++;
+
     }
     // setters and getters for all private fields
     public boolean hasPurchasedTicket() {
