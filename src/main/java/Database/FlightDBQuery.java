@@ -5,7 +5,7 @@ import org.example.Flight;
 import static Database.myJDBC.getConnection;
 public class FlightDBQuery {
 
-    public static void addFlight(Flight flight) {
+    public static boolean addFlight(Flight flight) {
         Connection connection = null;
 
         connection = getConnection();
@@ -34,9 +34,11 @@ public class FlightDBQuery {
             statement.executeUpdate(sql);
 
             System.out.println("Flight added successfully!");
+            return true;
 
         } catch (Exception e) {
             System.out.println("Error adding flight: " + e.getMessage());
+            return false;
         } finally {
             try {
                 // Close the statement and connection

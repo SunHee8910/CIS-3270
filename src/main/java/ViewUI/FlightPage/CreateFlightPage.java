@@ -40,6 +40,7 @@ public class CreateFlightPage extends Page {
         TextField arrivalDate = new TextField();
         TextField departureTime = new TextField();
         TextField arrivalTime = new TextField();
+        VBox root = new VBox(5);
 
 
         Button createFlight = new Button("Create Flight");
@@ -48,7 +49,12 @@ public class CreateFlightPage extends Page {
 //             flightNumbers = generateFlightID(1);
               String ticketID = String.valueOf(generateFlightID(1));
               Flight flight = new Flight(departureCity.getText(), arrivalCity.getText(), departureDate.getText(), arrivalDate.getText(), departureTime.getText(), arrivalTime.getText());
-              addFlight(flight);
+              if (addFlight(flight)) {
+                    root.getChildren().add(new Label("Flight created successfully"));
+              }
+              else {
+                  root.getChildren().add(new Label("Flight not created"));
+              }
 //            try {
 //                Connection connection = myJDBC.getConnection();
 //                Statement statement = connection.createStatement();
@@ -61,7 +67,7 @@ public class CreateFlightPage extends Page {
 //                throw new RuntimeException(ex);
 //            }
         });
-        VBox root = new VBox(5);
+
         root.setPadding(new Insets(10));
         root.getChildren().addAll(text, new VBox(5, new VBox(new Label("Departure City"), departureCity), new VBox(new Label("Arrival City"), arrivalCity), new VBox(new Label("Departure Date"), departureDate), new VBox(new Label("Arrival Date"), arrivalDate), new VBox(new Label("Departure Time"), departureTime), new VBox(new Label("Arrival Time"), arrivalTime), createFlight, backButton));
         return new Scene(root, 800, 800);

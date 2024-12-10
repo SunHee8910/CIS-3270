@@ -44,7 +44,7 @@ public class SearchFlightPage extends Page {
         Label rooot = new Label();
         VBox flightlist = new VBox(5);
         VBox root = new VBox(10);
-        Button book = new Button();
+        Button book = new Button("Book Flight");
             searchFlights.setOnAction(e -> {
                 flightlist.getChildren().clear(); // Clear previous results
 
@@ -96,16 +96,20 @@ public class SearchFlightPage extends Page {
                     while (resultSet.next()) {
                         hasResults = true;
                         flights[i] = new Label();
-                        flights[i].setText(resultSet.getString("flightNumber") + " " +
-                                resultSet.getString("departureCity") + " " +
-                                resultSet.getString("arrivalCity") + " " +
-                                resultSet.getString("departureDate") + " " +
-                                resultSet.getString("arrivalDate") + " " +
-                                resultSet.getString("departureTime") + " " +
-                                resultSet.getString("arrivalTime") + " " +
-                                resultSet.getString("ticketID") + " " +
-                                resultSet.getString("ticketPrice"));
+                        flights[i].setText("Departure City: " +
+                                resultSet.getString("departureCity") + "      " +
+                                "Arrival City: " +
+                                resultSet.getString("arrivalCity") + "      " +
+                                "Departure Date: " +
+                                resultSet.getString("departureDate") + "      " +
+                                "Arrival Date: " +
+                                resultSet.getString("arrivalDate") + "      " +
+                                "Departure Time: " +
+                                resultSet.getString("departureTime") + "      " +
+                                "Arrival Time: " +
+                                resultSet.getString("arrivalTime"));
                         flightlist.getChildren().add(new Label(flights[i].getText()));
+                        flightlist.getChildren().add(new Button ("Book Flight"));
                         i++;
                     }
 
