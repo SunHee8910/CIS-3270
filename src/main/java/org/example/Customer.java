@@ -1,28 +1,21 @@
-/*package org.example;
-// user login requirement class
-class Customer{
-        private String customerName;
-        private String passWord;
-        private static int totalCustomers;
-        String Address = "Unknown";
-    String Zip = "Unknown";
-    String State = "Unknown";
-    String Username = "Unknown";
-    String Password = "Unknown";
-    String Email = "Unknown";
-    int SSN = 0;
-    String RecoveryAnswer = "Unknown";
+﻿package org.example;
+public class Customer extends User {
 
-        Customer(){
-
-        }
-        Customer(String customerName,String passWord){
-            this.customerName = customerName;
-            this.passWord = passWord;
-        }
-
-
+    public Customer(String customerName, String password, String address, String zip, String state,
+                    String username, String email, int ssn, String recoveryAnswer) {
+        super(customerName, password, address, zip, state, username, email, ssn, recoveryAnswer);
+    }
 
     }
 
-*/
+    // Customer-specific methods
+    public void bookFlight(Flight flight) {
+        System.out.println("Booking flight: " + flight.getTicketID());
+        // Logic to book a flight
+    }
+
+    public void viewBookings() {
+        System.out.println("Viewing booked flights...");
+        // Logic to retrieve and display booked flights
+    }
+}
