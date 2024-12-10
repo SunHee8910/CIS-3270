@@ -50,6 +50,7 @@ public class FlightDBQuery {
         }
     }
 
+
     // Delete a flight from a user's account
     public boolean deleteFlight(String username, Flight flight) {
         try (Connection connection = myJDBC.getConnection();
