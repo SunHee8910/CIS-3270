@@ -132,14 +132,8 @@ public class FlightDBQuery {
         } catch (SQLException e) {
             System.out.println("Error checking for time conflicts: " + e.getMessage());
         }
-        return false;
-    }
 
-
-} catch (SQLException e) {
-            System.out.println("Error checking for time conflicts: " + e.getMessage());
-        }
-        return false;
+        return false; // No conflicts detected
     }
 
 
