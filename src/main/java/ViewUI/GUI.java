@@ -392,7 +392,7 @@ public class GUI extends Application {
                     try {
                         Connection connection = myJDBC.getConnection();
                         Statement statement = connection.createStatement();
-                        String sql = "INSERT INTO users (firstName, lastName, address, zip, state, username, password, email, ssn, question) VALUES ('" + firstName + "', '" + lastName + "', '" + address + "', '" + zip + "', '" + state + "', '" + username + "', '" + password + "', '" + email + "', '" + ssn + "', '" + question + "')";
+                        String sql = "INSERT INTO customers (customerName, passWord, Address, Zip /*, username, Password, Email, SSN, RecoveryAnswer*/) VALUES ('" + firstName + " " + lastName + "', '" + password + "', '" + address + "', '" + zip + "' )";/*+ state + "', '" + "', '" + email + "', '" + ssn + "', '" + question + "'*/
                         statement.executeUpdate(sql);
                         this.stage.setScene(getUserScreen());
                     }
