@@ -16,6 +16,8 @@ import javafx.scene.text.Text;
 import java.sql.Connection;
 import java.sql.Statement;
 
+import static ViewUI.PageManager.ADMIN_PAGE;
+
 public class DeleteFlightPage extends Page {
     public DeleteFlightPage(PageManager pageManager) {
         super(pageManager);
@@ -27,7 +29,7 @@ public class DeleteFlightPage extends Page {
         text.setFont(Font.font("System", FontWeight.BOLD, 22));
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
-            this.pageManager.setScene(ADMIN);
+            this.pageManager.setScene(ADMIN_PAGE);
         });
         TextField flightNumber = new TextField();
         Button deleteFlight = new Button("Delete Flight");

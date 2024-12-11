@@ -19,6 +19,7 @@ import java.sql.Statement;
 
 import static CodingLogicPackage.CodingLogic.generateFlightID;
 import static Database.FlightDBQuery.addFlight;
+import static ViewUI.PageManager.ADMIN_PAGE;
 
 public class CreateFlightPage extends Page {
     public CreateFlightPage(PageManager pageManager) {
@@ -31,7 +32,7 @@ public class CreateFlightPage extends Page {
         text.setFont(Font.font("System", FontWeight.BOLD, 22));
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
-            this.pageManager.setScene(ADMIN);
+            this.pageManager.setScene(ADMIN_PAGE);
         });
 
         TextField departureCity = new TextField();

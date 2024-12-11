@@ -1,6 +1,5 @@
 package ViewUI;
 
-
 import ViewUI.FlightPage.*;
 import ViewUI.LoginPage.AdminLoginPage;
 import ViewUI.LoginPage.CustomerLoginPage;
@@ -9,31 +8,48 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 
-import static ViewUI.Page.*;
-
 public class PageManager {
+    public static final int LANDING = 0;
+    public static final int ADMIN_LOGIN = 1;
+    public static final int CUSTOMER_LOGIN = 2;
+    public static final int SEARCH_FLIGHT = 3;
+    public static final int REGISTER = 4;
+    public static final int USER_PAGE = 5;
+    public static final int VIEW_FLIGHT = 6;
+    public static final int ADMIN_PAGE = 7;
+    public static final int CREATE_FLIGHT = 8;
+    public static final int UPDATE_FLIGHT = 9;
+    public static final int DELETE_FLIGHT = 10;
+    public static final int FORGOT_PASSWORD = 11;
+
     ArrayList<Page> pages;
     Stage stage;
 
-    PageManager(Stage stage) {
+    public PageManager(Stage stage) {
         this.stage = stage;
-        pages = new ArrayList<Page>();
-        pages.add(ADMIN_LOGIN, new AdminLoginPage(this));
-        pages.add(CUSTOMER_LOGIN, new CustomerLoginPage(this));
-        pages.add(LANDING, new LandingPage(this));
-        pages.add(SEARCH_FLIGHT, new SearchFlightPage(this));
-        pages.add(REGISTER, new RegisterPage(this));
-        pages.add(USER, new UserPage(this));
-        pages.add(VIEW_FLIGHT, new ViewFlightPage(this));
-        pages.add(ADMIN, new AdminPage(this));
-        pages.add(CREATE_FLIGHT, new CreateFlightPage(this));
-        pages.add(UPDATE_FLIGHT, new UpdateFlightPage(this));
-        pages.add(DELETE_FLIGHT, new DeleteFlightPage(this));
-        pages.add(FORGOT_PASSWORD, new ForgotPasswordPage(this));
+        pages = new ArrayList<>();
+        pages.add(new LandingPage(this));
+        pages.add(new AdminLoginPage(this));
+        pages.add(new CustomerLoginPage(this));
+        pages.add(new SearchFlightPage(this));
+        pages.add(new RegisterPage(this));
+        pages.add(new UserPage(this, null));
+        //pages.add(new ViewFlightPage(this));
+        pages.add(new AdminPage(this));
+        pages.add(new CreateFlightPage(this));
+        pages.add(new UpdateFlightPage(this));
+        pages.add(new DeleteFlightPage(this));
+        pages.add(new ForgotPasswordPage(this));
 
-        stage.setScene(pages.get(LANDING).getScene());
+        stage.setScene(pages.get(0).getScene());
         stage.setTitle("Flight Tracker");
         stage.show();
+    }
+
+    public void setScene(int newScene, Username user) {
+        Page page = pages.get(newScene);
+        page.setUser(user);
+        stage.setScene(page.getScene());
     }
 
     public void setScene(int newScene) {

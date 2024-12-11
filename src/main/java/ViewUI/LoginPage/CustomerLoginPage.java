@@ -2,6 +2,7 @@ package ViewUI.LoginPage;
 
 import ViewUI.Page;
 import ViewUI.PageManager;
+import ViewUI.Username;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -18,6 +19,8 @@ import javafx.scene.text.Text;
 import java.util.ArrayList;
 
 import static Database.myJDBC.userOrAdminLoginQuery;
+import static ViewUI.PageManager.LANDING;
+import static ViewUI.PageManager.USER_PAGE;
 
 public class CustomerLoginPage extends Page {
     public CustomerLoginPage(PageManager pageManager) {
@@ -31,7 +34,7 @@ public class CustomerLoginPage extends Page {
         Button backButton = new Button("Back");
         Button forgotPasswordButton = new Button("Forgot Password");
         backButton.setOnAction(e -> {
-            this.pageManager.setScene(LANDING);
+            this.pageManager.setScene(LANDING, null);
         });
         Button loginButton = new Button("Login");
         VBox root = new VBox(5);
@@ -88,7 +91,8 @@ public class CustomerLoginPage extends Page {
                 }
             }
             if (!hasError) {
-                this.pageManager.setScene(USER);
+                Username user = new Username(usernameTextField.getText());
+                this.pageManager.setScene(USER_PAGE, user);
             }
         });
 

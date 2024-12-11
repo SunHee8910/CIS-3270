@@ -19,6 +19,8 @@ import java.util.Arrays;
 import static CodingLogicPackage.CodingLogic.isValidPassword;
 import static Database.myJDBC.createCustomerQuery;
 import static Database.myJDBC.getUsernameIsUniqueQuery;
+import static ViewUI.PageManager.LANDING;
+import static ViewUI.PageManager.USER_PAGE;
 
 public class RegisterPage extends Page {
     private final ArrayList<Label> errorMessages;
@@ -205,7 +207,7 @@ public class RegisterPage extends Page {
         if (!hasError) {
             boolean isSuccessful = createCustomerQuery(firstName, lastName, password, address, zip, state, email, Integer.parseInt(ssn), question, answer, username);
             if (isSuccessful) {
-                this.pageManager.setScene(USER);
+                this.pageManager.setScene(USER_PAGE, new Username(username));
             }
         }
     }

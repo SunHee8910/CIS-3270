@@ -17,6 +17,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import static ViewUI.PageManager.ADMIN_PAGE;
+
 public class UpdateFlightPage extends Page {
     public UpdateFlightPage(PageManager pageManager) {
         super(pageManager);
@@ -28,7 +30,7 @@ public class UpdateFlightPage extends Page {
         text.setFont(Font.font("System", FontWeight.BOLD, 22));
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
-            this.pageManager.setScene(ADMIN);
+            this.pageManager.setScene(ADMIN_PAGE);
         });
         TextField flightNumber = new TextField();
         TextField departureCity = new TextField();

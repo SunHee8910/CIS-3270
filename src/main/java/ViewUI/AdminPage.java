@@ -8,6 +8,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
+import static ViewUI.PageManager.*;
+
 public class AdminPage extends Page{
 
     public AdminPage(PageManager pageManager) {
@@ -20,7 +22,7 @@ public class AdminPage extends Page{
         text.setFont(Font.font("System", FontWeight.BOLD, 22));
         Button backButton = new Button("Logout");
         backButton.setOnAction(e -> {
-            this.pageManager.setScene(LANDING);
+            this.pageManager.setScene(LANDING, null);
         });
         Button createFlight = new Button("Create Flight");
         createFlight.setOnAction(e -> {
