@@ -78,6 +78,67 @@ public class FlightDBQuery {
     }
 
 
+    private boolean isTimeAvailable(String arrivalTime, String departureTime) {
+        arrivalTime = normalizeTime(arrivalTime);
+        departureTime = normalizeTime(departureTime);
+
+        if (arrivalTime == null || departureTime == null) {
+            System.out.println("Invalid time format. Accepted formats: HH:mm or HH mm.");
+            return false;
+        }
+
+        int arrival = Integer.parseInt(arrivalTime.replace(":", ""));
+        int departure = Integer.parseInt(departureTime.replace(":", ""));
+        return departure > arrival; // Departure must be after arrival
+    }
+
+
+
+
+    private String normalizeTime(String time) {
+        String cleanedTime = time.replace(" ", "").replace(":", "");
+        if (cleanedTime.matches("\\d{4}")) {
+            return cleanedTime.substring(0, 2) + ":" + cleanedTime.substring(2);
+        }
+        return null;
+    }
+
+
+    private boolean hasTimeConflict(int userID, Flight newFlight) {
+        String query = "SELECT flights.arrivalDate, flights.arrivalTime, flights.arrivalCity " +
+                "FROM flights " +
+                "JOIN bookings ON flights.ticketID = bookings.ticketID " +
+                "WHERE bookings.userID = ?";
+        try (Connection connection = myJDBC.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setInt(1, userID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                String bookedArrivalDate = resultSet.getString("arrivalDate");
+                String bookedArrivalTime = resultSet.getString("arrivalTime");
+                String bookedArrivalCity = resultSet.getString("arrivalCity");
+
+                // Ensure the arrival city and new flight's departure city are different
+                if (bookedArrivalCity.equals(newFlight.getDepartureCity())) {
+
+                    if (bookedArrivalDate.equals(newFlight.getDepartureDate()) &&
+                            !isTimeAvailable(bookedArrivalTime, newFlight.getDepartureTime())) {
+                        return true; // Conflict detected
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error checking for time conflicts: " + e.getMessage());
+        }
+
+        return false; // No conflicts detected
+    }
+
+
+
     public boolean bookFlight(String username, Flight flight) {
         try (Connection connection = myJDBC.getConnection()) {
 

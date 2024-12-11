@@ -1,25 +1,28 @@
 package org.example;
+
 import java.util.ArrayList;
 import CodingLogicPackage.CodingLogic;
-public class Flight{
+
+public class Flight {
     private static ArrayList<Integer> bookedFlightIDs = new ArrayList<>();
     private String departureCity = "Please select a departure city";
     private String arrivalCity = "Please select a arrival city";
     private String departureDate = "Please select a departure date";
-    private String arrivalDate = "Please select a arrival date";
+    private String arrivalDate = "Please select an arrival date";
     public String departureTime = "Please select a departure time";
-    private String arrivalTime = "Please select a arrival time";
+    private String arrivalTime = "Please select an arrival time";
     private boolean purchasedTicket = false;
     private int ticketsRemaining = 100;
     private int ticketID = 0;
     public static int flightsBooked = 0;
-    private ArrayList<User> passengers;
+    private ArrayList<User> passengers = new ArrayList<>();
 
-    // default constructor
-    public Flight(){
-        flightsBooked ++;
+    // Default constructor
+    public Flight() {
+        flightsBooked++;
     }
-    // constructor when user is ready to book entire flight
+
+    // Constructor when the user is ready to book the entire flight
     public Flight(String departureCity, String arrivalCity, String departureDate, String arrivalDate, String departureTime, String arrivalTime) {
         this.ticketID = CodingLogic.generateFlightID(50);
         this.purchasedTicket = true;
@@ -30,18 +33,21 @@ public class Flight{
         this.departureTime = departureTime;
         this.arrivalTime = arrivalTime;
         flightsBooked++;
-
     }
-    // setters and getters for all private fields
+
+    // Getters and Setters
     public boolean hasPurchasedTicket() {
         return purchasedTicket;
     }
+
     public void setPurchasedTicket(boolean purchasedTicket) {
         this.purchasedTicket = purchasedTicket;
     }
+
     public int getTicketsRemaining() {
         return ticketsRemaining;
     }
+
     public void setTicketsRemaining(int ticketsRemaining) {
         this.ticketsRemaining = ticketsRemaining;
     }
@@ -65,16 +71,6 @@ public class Flight{
     public String getDepartureDate() {
         return departureDate;
     }
-//
-
-    public void addPassenger(User user) {
-        passengers.add(user);
-    }
-
-    public ArrayList<User> getPassengers() {
-        return passengers;
-    }
-
 
     public void setDepartureDate(String departureDate) {
         this.departureDate = departureDate;
@@ -96,19 +92,47 @@ public class Flight{
         this.arrivalTime = arrivalTime;
     }
 
-    public int getTicketID(){
+    public int getTicketID() {
         return ticketID;
+    }
+
+    public void setTicketID(int ticketID) {
+        this.ticketID = ticketID;
+    }
+
+    public String getDepartureTime() {
+        return departureTime;
+    }
+
+    public void setDepartureTime(String departureTime) {
+        this.departureTime = departureTime;
+    }
+
+    public ArrayList<User> getPassengers() {
+        return passengers;
+    }
+
+    public void addPassenger(User user) {
+        this.passengers.add(user);
+    }
+
+    public static ArrayList<Integer> getBookedFlightIDs() {
+        return bookedFlightIDs;
+    }
+
+    public static void setBookedFlightIDs(ArrayList<Integer> bookedFlightIDs) {
+        Flight.bookedFlightIDs = bookedFlightIDs;
+    }
+
+    public static int getFlightsBooked() {
+        return flightsBooked;
+    }
+
+    public static void setFlightsBooked(int flightsBooked) {
+        Flight.flightsBooked = flightsBooked;
     }
 
     public void setdepartureTime(String departureTime) {
         this.departureTime = departureTime;
     }
-/*
-    public static void main(String[] args) {
-        Flight newFlight = new Flight("test","test2", "test3", "test4", "test5", "test6");
-        System.out.println(        newFlight.getTicketID());
-    }
-    test main method to ensure the initalization of a newflight instance would have a randomly generated number through the coding logic method.
- */
-
 }
