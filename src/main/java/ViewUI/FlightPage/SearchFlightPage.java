@@ -5,11 +5,21 @@ import ViewUI.Page;
 import ViewUI.PageManager;
 import ViewUI.Username;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+
+import Database.myJDBC;
+import ViewUI.Page;
+import ViewUI.PageManager;
+import ViewUI.Username;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -20,130 +30,187 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import static CodingLogicPackage.CodingLogic.generateFlightID;
 import static ViewUI.PageManager.USER_PAGE;
 
 public class SearchFlightPage extends Page {
+
 
     public SearchFlightPage(PageManager pageManager, Username user) {
         super(pageManager);
         this.user = user;
     }
 
-    public SearchFlightPage(PageManager pageManager) {
-                super(pageManager);
-    }
-
     @Override
     public Scene getScene() {
-        Text text = new Text("✈️ Search for Flights ");
         String username = user.getUsername();
-        text.setFont(Font.font("System", FontWeight.BOLD, 22));
+        BorderPane root = new BorderPane();
+
+        // Create the search form at the top
+        VBox searchBox = createSearchForm();
+        root.setTop(searchBox);
+
+        // Create the list view for flights
+        ListView<String> flightListView = new ListView<>();
+        flightListView.setPrefHeight(200);
+        root.setCenter(flightListView);
+
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
-            this.pageManager.setScene(USER_PAGE, user);
+            this.pageManager.setScene(USER_PAGE, this.user);
         });
-        TextField departureCity = new TextField();
-        TextField arrivalCity = new TextField();
-        TextField departureDate = new TextField();
-        TextField arrivalDate = new TextField();
-        TextField departureTime = new TextField();
-        TextField arrivalTime = new TextField();
-        Button searchFlights = new Button("Search Flights");
-        Label flights[] = new Label[100];
-        Label rooot = new Label();
-        VBox flightlist = new VBox(5);
-        VBox root = new VBox(10);
-        Button book = new Button("Book Flight");
-        searchFlights.setOnAction(e -> {
-            flightlist.getChildren().clear(); // Clear previous results
 
-            try {
-                Connection connection = myJDBC.getConnection();
-                Statement statement = connection.createStatement();
-                StringBuilder query = new StringBuilder("SELECT * FROM flights WHERE 1=1");
+        // Create the booking button
+        Button bookButton = new Button("Book Flight");
+        root.setBottom(bookButton);
+        bookButton.setDisable(true);
 
-                if (!departureCity.getText().isBlank()) {
-                    query.append(" AND departureCity LIKE '%").append(departureCity.getText()).append("%'");
-                }
-                else {
-                    query.append(" AND departureCity LIKE '%").append(departureCity.getText()).append("%'");
-                }
-                if (!arrivalCity.getText().isBlank()) {
-                    query.append(" AND arrivalCity LIKE '%").append(arrivalCity.getText()).append("%'");
-                }
-                else {
-                    query.append(" AND arrivalCity LIKE '%").append(arrivalCity.getText()).append("%'");
-                }
-                if (!departureDate.getText().isBlank()) {
-                    query.append(" AND departureDate LIKE '%").append(departureDate.getText()).append("%'");
-                }
-                else{
-                    query.append(" AND departureDate LIKE '%").append(departureDate.getText()).append("%'");
-                }
-                if (!arrivalDate.getText().isBlank()) {
-                    query.append(" AND arrivalDate LIKE '%").append(arrivalDate.getText()).append("%'");
-                }
-                else {
-                    query.append(" AND arrivalDate LIKE '%").append(arrivalDate.getText()).append("%'");
-                }
-                if (!departureTime.getText().isBlank()) {
-                    query.append(" AND departureTime LIKE '%").append(departureTime.getText()).append("%'");
-                }
-                else{
-                    query.append(" AND departureTime LIKE '%").append(departureTime.getText()).append("%'");
-                }
-                if (!arrivalTime.getText().isBlank()) {
-                    query.append(" AND arrivalTime LIKE '%").append(arrivalTime.getText()).append("%'");
-                }
-                else{
-                    query.append(" AND arrivalTime LIKE '%").append(arrivalTime.getText()).append("%'");
-                }
+        // Retrieve input fields
+        TextField departureField = (TextField) searchBox.lookup("#departureField");
+        TextField destinationField = (TextField) searchBox.lookup("#destinationField");
+        DatePicker datePicker = (DatePicker) searchBox.lookup("#datePicker");
+        TextField departureTimeField = (TextField) searchBox.lookup("#departureTimeField");
 
-                ResultSet resultSet = statement.executeQuery(query.toString());
-                boolean hasResults = false;
-                int i = 0;
-                while (resultSet.next()) {
-                    hasResults = true;
-                    flights[i] = new Label();
-                    flights[i].setText("Departure City: " +
-                            resultSet.getString("departureCity") + "      " +
-                            "Arrival City: " +
-                            resultSet.getString("arrivalCity") + "      " +
-                            "Departure Date: " +
-                            resultSet.getString("departureDate") + "      " +
-                            "Arrival Date: " +
-                            resultSet.getString("arrivalDate") + "      " +
-                            "Departure Time: " +
-                            resultSet.getString("departureTime") + "      " +
-                            "Arrival Time: " +
-                            resultSet.getString("arrivalTime"));
-                    flightlist.getChildren().add(new Label(flights[i].getText()));
+        // Search button action
+        Button searchButton = (Button) searchBox.lookup("#searchButton");
+        searchButton.setOnAction(event -> searchFlights(flightListView, departureField, destinationField, datePicker, departureTimeField));
 
-                    flightlist.getChildren().add(new Button ("Book Flight"));
-                    i++;
+        // Handle flight selection and booking
+        flightListView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            bookButton.setDisable(newSelection == null);  // Enable/Disable the book button
+        });
+
+        // Handle booking the selected flight
+        bookButton.setOnAction(event -> {
+            String selectedFlight = flightListView.getSelectionModel().getSelectedItem();
+            if (selectedFlight != null) {
+                // Assuming you have a method to book the flight (e.g., storing it in a database or log
+                if (bookFlight(selectedFlight, username)) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Flight Booking");
+                    alert.setContentText("Your flight has been successfully booked");
+                    alert.showAndWait();
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Flight Booking");
+                    alert.setContentText("There was an error booking your flight. Please try again later.");
+                    alert.showAndWait();
                 }
-
-                if (!hasResults) {
-                    flightlist.getChildren().add(new Label("No flights found"));
-                }
-
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
             }
         });
-        book.setOnAction(b -> {
-            Flight flight = new Flight();
 
+        return new Scene(root, 800, 600);
+    }
 
+    // Create the search form UI
+    private VBox createSearchForm() {
+        Label departureLabel = new Label("Departure City:");
+        TextField departureField = new TextField();
+        departureField.setId("departureField");
+        departureField.setPromptText("Enter Departure City");
+
+        Label destinationLabel = new Label("Destination City:");
+        TextField destinationField = new TextField();
+        destinationField.setId("destinationField");
+        destinationField.setPromptText("Enter Destination City");
+
+        Label departureTimeLabel = new Label("Departure Time:");
+        TextField departureTimeField = new TextField();
+        departureTimeField.setId("departureTimeField");
+
+        Label dateLabel = new Label("Travel Date:");
+        DatePicker datePicker = new DatePicker();
+        datePicker.setId("datePicker");
+
+        Button searchButton = new Button("Search Flights");
+        searchButton.setId("searchButton");
+
+        Button backButton = new Button("Back");
+        backButton.setOnAction(e -> {
+            this.pageManager.setScene(USER_PAGE, this.user);
         });
 
-        root.setPadding(new Insets(10));
-        root.getChildren().addAll(text, new VBox(5, new VBox(new Label("Departure City"), departureCity), new VBox(new Label("Arrival City"), arrivalCity), new VBox(new Label("Departure Date"), departureDate), new VBox(new Label("Arrival Date"), arrivalDate), new VBox(new Label("Departure Time"), departureTime), new VBox(new Label("Arrival Time"), arrivalTime), searchFlights, backButton), flightlist);
-        ScrollPane scroll = new ScrollPane(root);
-        scroll.setFitToHeight(true);
-        scroll.setFitToWidth(true);
+        VBox searchBox = new VBox(10, departureLabel, departureField, destinationLabel, destinationField, dateLabel, datePicker, departureTimeLabel, departureTimeField, searchButton, backButton);
+        searchBox.setAlignment(Pos.CENTER);
+        searchBox.setPadding(new Insets(20));
 
-        return new Scene(root, 800, 800);
 
+
+        return searchBox;
+    }
+
+    private void searchFlights(ListView<String> flightListView, TextField departureField, TextField destinationField, DatePicker datePicker, TextField departureTimeField) {
+        String departureCity = departureField.getText();
+        String destinationCity = destinationField.getText();
+        String departureDate = datePicker.getValue() != null ? datePicker.getValue().toString() : "";
+        String departureTime = departureTimeField.getText();
+
+        // Clear previous results
+        flightListView.getItems().clear();
+
+        try {
+            Connection connection = myJDBC.getConnection();
+            Statement statement = connection.createStatement();
+            StringBuilder query = new StringBuilder("SELECT * FROM flights WHERE 1=1");
+
+            if (!departureCity.isBlank()) {
+                query.append(" AND departureCity LIKE '%").append(departureCity).append("%'");
+            }
+            if (!destinationCity.isBlank()) {
+                query.append(" AND arrivalCity LIKE '%").append(destinationCity).append("%'");
+            }
+            if (!departureDate.isBlank()) {
+                query.append(" AND departureDate LIKE '%").append(departureDate).append("%'");
+            }
+            if (!departureTime.isBlank()) {
+                query.append(" AND departureTime LIKE '%").append(departureTime).append("%'");
+            }
+
+            ResultSet resultSet = statement.executeQuery(query.toString());
+
+            while (resultSet.next()) {
+                String flightDetails ="FlightID: " + resultSet.getString("ticketID") + "  Departure City: " + resultSet.getString("departureCity") +
+                        ", Arrival City: " + resultSet.getString("arrivalCity") +
+                        ", Departure Date: " + resultSet.getString("departureDate") +
+                        ", Departure Time: " + resultSet.getString("departureTime");
+                flightListView.getItems().add(flightDetails);
+            }
+
+            if (flightListView.getItems().isEmpty()) {
+                flightListView.getItems().add("No flights found");
+            }
+
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private boolean bookFlight(String selectedFlight, String username) {
+        try{
+            Connection connection = myJDBC.getConnection();
+            Statement statement = connection.createStatement();
+            String[] flightDetails = selectedFlight.split(" ");
+            String ticketIDs = flightDetails[1].trim();
+            int ticketID = Integer.parseInt(ticketIDs);
+
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM flights WHERE ticketID = '" + ticketID + "'");
+            if (resultSet.next()) {
+                ResultSet userid = statement.executeQuery("SELECT userID FROM users WHERE username = '" + username + "'");
+                if (userid.next()) {
+                    int bookingID = generateFlightID(1);
+                    String sql = "INSERT INTO bookings (bookingID, userID, ticketID) VALUES ('" + bookingID + "', '" + userid.getInt("userID") + "', '" + ticketID + "')";
+                    if (statement.executeUpdate(sql) > 0) {
+                        return true;
+                    }
+                }
+            }
+                else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return false;
     }
 }
