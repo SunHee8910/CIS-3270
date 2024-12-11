@@ -22,6 +22,7 @@ public abstract class Page {
 
     public abstract Scene getScene();{
 }
+
     public void handleForgotPasswordAction(ActionEvent actionEvent, String username) {
         if (username.isBlank()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);

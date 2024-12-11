@@ -31,7 +31,7 @@ public class PageManager {
         pages.add(new LandingPage(this));
         pages.add(new AdminLoginPage(this));
         pages.add(new CustomerLoginPage(this));
-        pages.add(new SearchFlightPage(this));
+        pages.add(new SearchFlightPage(this, null));
         pages.add(new RegisterPage(this));
         pages.add(new UserPage(this, null));
         //pages.add(new ViewFlightPage(this));
