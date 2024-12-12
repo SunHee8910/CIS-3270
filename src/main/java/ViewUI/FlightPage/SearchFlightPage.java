@@ -134,8 +134,6 @@ public class SearchFlightPage extends Page {
         searchBox.setAlignment(Pos.CENTER);
         searchBox.setPadding(new Insets(20));
 
-
-
         return searchBox;
     }
 

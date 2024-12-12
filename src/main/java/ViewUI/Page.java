@@ -20,8 +20,7 @@ public abstract class Page {
         this.user = user;
     }
 
-    public abstract Scene getScene();{
-}
+    public abstract Scene getScene();
 
     public void handleForgotPasswordAction(ActionEvent actionEvent, String username) {
         if (username.isBlank()) {

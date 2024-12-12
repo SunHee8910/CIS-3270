@@ -1,8 +1,15 @@
 package Database;
+
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+
 import org.example.Flight;
+import org.example.User;
+import org.example.UserFlight;
+
 import static Database.myJDBC.getConnection;
+
 public class FlightDBQuery {
 
     public static boolean addFlight(Flight flight) {
@@ -52,29 +59,56 @@ public class FlightDBQuery {
 
 
     // Delete a flight from a user's account
-    public boolean deleteFlight(String username, Flight flight) {
-        try (Connection connection = myJDBC.getConnection();
-             Statement statement = connection.createStatement()) {
-
-            // Construct SQL to delete the flight booking
-            String sql = "DELETE FROM flights WHERE " +
-                    "username = '" + username + "' AND " +
-                    "ticketID = '" + flight.getTicketID() + "'";
-
-            int rowsAffected = statement.executeUpdate(sql);
+    public static boolean deleteFlight(int bookingID) {
+        try {
+            int rowsAffected = myJDBC.getConnection().createStatement().executeUpdate(
+                    String.format("delete from bookings where bookingID = '%d'", bookingID));
 
             if (rowsAffected > 0) {
-                System.out.println("Flight with ticket ID " + flight.getTicketID() + " deleted from user " + username + "'s account.");
-                return true;
+                System.out.printf("Flight with booking ID %s deleted\n", bookingID);
             } else {
-                System.out.println("Flight with ticket ID " + flight.getTicketID() + " not found in user " + username + "'s account.");
-                return false;
+                System.out.printf("Flight with booking ID %s not deleted\n", bookingID);
             }
 
+            return rowsAffected > 0;
         } catch (Exception e) {
             System.err.println("Error deleting flight: " + e.getMessage());
             return false;
         }
+    }
+
+    public static ArrayList<UserFlight> getUserFlights(String username) {
+        try {
+            ResultSet results = myJDBC.getConnection().createStatement().executeQuery(
+                    "SELECT bookings.bookingID, bookings.ticketID, flights.departureCity, flights.arrivalCity, flights.departureTime, flights.arrivalTime, flights.departureDate, flights.arrivalDate " +
+                            "FROM bookings JOIN flights ON bookings.ticketID = flights.ticketID " +
+                            "JOIN users ON bookings.userID = users.userID " +
+                            "WHERE users.username = '" + username + "'");
+
+            ArrayList<UserFlight> result = new ArrayList<>();
+
+            while (results.next()) {
+                int ticketID = results.getInt("ticketID");
+                String departureCity = results.getString("departureCity");
+                String arrivalCity = results.getString("arrivalCity");
+                String departureTime = results.getString("departureTime");
+                String arrivalTime = results.getString("arrivalTime");
+                String departureDate = results.getString("departureDate");
+                String arrivalDate = results.getString("arrivalDate");
+                Flight flight = new Flight(
+                        departureCity, arrivalCity, departureDate, arrivalDate, departureTime, arrivalTime, ticketID
+                );
+                int bookingID = results.getInt("bookingID");
+                UserFlight userFlight = new UserFlight(bookingID, username, flight);
+                result.add(userFlight);
+            }
+
+            return result;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ArrayList<>();
+        }
+
     }
 
 
@@ -91,8 +125,6 @@ public class FlightDBQuery {
         int departure = Integer.parseInt(departureTime.replace(":", ""));
         return departure > arrival; // Departure must be after arrival
     }
-
-
 
 
     private String normalizeTime(String time) {
@@ -136,7 +168,6 @@ public class FlightDBQuery {
 
         return false; // No conflicts detected
     }
-
 
 
     public boolean bookFlight(String username, Flight flight) {
@@ -255,7 +286,6 @@ public class FlightDBQuery {
 
         return bookedFlights;
     }
-
 
 
     // Search for flights based on criteria

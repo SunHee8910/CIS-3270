@@ -22,6 +22,16 @@ public class Flight {
         flightsBooked++;
     }
 
+    public Flight(String departureCity, String arrivalCity, String departureDate, String arrivalDate, String departureTime, String arrivalTime, int ticketID) {
+        this.departureCity = departureCity;
+        this.arrivalCity = arrivalCity;
+        this.departureDate = departureDate;
+        this.arrivalDate = arrivalDate;
+        this.departureTime = departureTime;
+        this.arrivalTime = arrivalTime;
+        this.ticketID = ticketID;
+    }
+
     // Constructor when the user is ready to book the entire flight
     public Flight(String departureCity, String arrivalCity, String departureDate, String arrivalDate, String departureTime, String arrivalTime) {
         this.ticketID = CodingLogic.generateFlightID(50);
