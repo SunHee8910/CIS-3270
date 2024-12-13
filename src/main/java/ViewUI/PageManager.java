@@ -24,6 +24,7 @@ public class PageManager {
 
     ArrayList<Page> pages;
     Stage stage;
+    int currentScene;
 
     public PageManager(Stage stage) {
         this.stage = stage;
@@ -47,12 +48,18 @@ public class PageManager {
     }
 
     public void setScene(int newScene, Username user) {
+        this.currentScene = newScene;
         Page page = pages.get(newScene);
         page.setUser(user);
         stage.setScene(page.getScene());
     }
 
     public void setScene(int newScene) {
+        this.currentScene = newScene;
         stage.setScene(pages.get(newScene).getScene());
+    }
+
+    public void reload() {
+        stage.setScene(pages.get(this.currentScene).getScene());
     }
 }

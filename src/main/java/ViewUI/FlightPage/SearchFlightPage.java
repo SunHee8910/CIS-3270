@@ -90,6 +90,7 @@ public class SearchFlightPage extends Page {
                     alert.setTitle("Flight Booking");
                     alert.setContentText("Your flight has been successfully booked");
                     alert.showAndWait();
+                    this.pageManager.reload();
                 } else {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Flight Booking");
@@ -134,8 +135,6 @@ public class SearchFlightPage extends Page {
         searchBox.setAlignment(Pos.CENTER);
         searchBox.setPadding(new Insets(20));
 
-
-
         return searchBox;
     }
 
@@ -151,7 +150,12 @@ public class SearchFlightPage extends Page {
         try {
             Connection connection = myJDBC.getConnection();
             Statement statement = connection.createStatement();
-            StringBuilder query = new StringBuilder("SELECT * FROM flights WHERE 1=1");
+             StringBuilder query = new StringBuilder("SELECT distinct flights.* FROM flights WHERE 1=1 " +
+                    "and flights.ticketID not in (" +
+                    "select bookings.ticketID from bookings " +
+                    "join users on bookings.userID = users.userID " +
+                    "where lower(users.username) = lower('" + user.getUsername() + "')" +
+                    ")");
 
             if (!departureCity.isBlank()) {
                 query.append(" AND departureCity LIKE '%").append(departureCity).append("%'");
