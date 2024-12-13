@@ -70,6 +70,7 @@ public class CreateFlightPage extends Page {
         });
 
         root.setPadding(new Insets(10));
+        root.setStyle("-fx-background-color: #F0FFFF");
         root.getChildren().addAll(text, new VBox(5, new VBox(new Label("Departure City"), departureCity), new VBox(new Label("Arrival City"), arrivalCity), new VBox(new Label("Departure Date"), departureDate), new VBox(new Label("Arrival Date"), arrivalDate), new VBox(new Label("Departure Time"), departureTime), new VBox(new Label("Arrival Time"), arrivalTime), createFlight, backButton));
         return new Scene(root, 800, 800);
 

@@ -46,6 +46,7 @@ public class ForgotPasswordPage extends Page {
         });
         VBox root = new VBox(5);
         root.setPadding(new Insets(10));
+        root.setStyle("-fx-background-color: #F0FFFF");
         root.getChildren().addAll(question, answer, button, backButton);
 
         return new Scene(root, 800, 800);

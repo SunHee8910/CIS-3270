@@ -15,12 +15,11 @@ public class PageManager {
     public static final int SEARCH_FLIGHT = 3;
     public static final int REGISTER = 4;
     public static final int USER_PAGE = 5;
-    public static final int VIEW_FLIGHT = 6;
-    public static final int ADMIN_PAGE = 7;
-    public static final int CREATE_FLIGHT = 8;
-    public static final int UPDATE_FLIGHT = 9;
-    public static final int DELETE_FLIGHT = 10;
-    public static final int FORGOT_PASSWORD = 11;
+    public static final int ADMIN_PAGE = 6;
+    public static final int CREATE_FLIGHT = 7;
+    public static final int UPDATE_FLIGHT = 8;
+    public static final int DELETE_FLIGHT = 9;
+    public static final int FORGOT_PASSWORD = 10;
 
     ArrayList<Page> pages;
     Stage stage;
@@ -35,7 +34,6 @@ public class PageManager {
         pages.add(new SearchFlightPage(this, null));
         pages.add(new RegisterPage(this));
         pages.add(new UserPage(this, null));
-        //pages.add(new ViewFlightPage(this));
         pages.add(new AdminPage(this));
         pages.add(new CreateFlightPage(this));
         pages.add(new UpdateFlightPage(this));

@@ -44,7 +44,10 @@ public class SearchFlightPage extends Page {
     @Override
     public Scene getScene() {
         String username = user.getUsername();
+        Text text = new Text("✈️ Search Flights ");
+        text.setFont(Font.font("System", FontWeight.BOLD, 22));
         BorderPane root = new BorderPane();
+        root.setStyle("-fx-background-color: #F0FFFF");
 
         // Create the search form at the top
         VBox searchBox = createSearchForm();

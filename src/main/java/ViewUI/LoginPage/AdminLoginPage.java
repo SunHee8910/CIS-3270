@@ -36,6 +36,7 @@ public class AdminLoginPage extends Page {
         Button loginButton = new Button("Login");
         VBox root = new VBox(5);
         root.setPadding(new Insets(10));
+        root.setStyle("-fx-background-color: #F0FFFF");
 
         ArrayList<Label> errorMessages = new ArrayList<>();
 
@@ -89,6 +90,11 @@ public class AdminLoginPage extends Page {
                 if (!isSuccessful) {
                     signInError.setText("Invalid username or password.");
                 }
+                else{
+                    Username username = new Username(usernameTextField.getText());
+                    this.pageManager.setScene(ADMIN_PAGE,username );
+
+                }
             }
 
             boolean hasError = false;
@@ -97,10 +103,6 @@ public class AdminLoginPage extends Page {
                     hasError = true;
                     errorMessages.get(i).setManaged(true);
                 }
-            }
-            if (!hasError) {
-                Username Username;
-                this.pageManager.setScene(ADMIN_PAGE, Username = new Username(usernameTextField.getText()));
             }
         });
 

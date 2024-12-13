@@ -39,6 +39,7 @@ public class CustomerLoginPage extends Page {
         Button loginButton = new Button("Login");
         VBox root = new VBox(5);
         root.setPadding(new Insets(10));
+        root.setStyle("-fx-background-color: #F0FFFF");
 
         ArrayList<Label> errorMessages = new ArrayList<>();
 

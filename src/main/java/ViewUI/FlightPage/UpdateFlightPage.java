@@ -67,6 +67,7 @@ public class UpdateFlightPage extends Page {
 
         });
         VBox root = new VBox(5);
+        root.setStyle("-fx-background-color: #F0FFFF");
         root.setPadding(new Insets(10));
         root.getChildren().addAll(text, new VBox(5, new VBox(new Label("Flight Number"), flightNumber), new VBox(new Label("Departure City"), departureCity), new VBox(new Label("Arrival City"), arrivalCity), new VBox(new Label("Departure Date"), departureDate), new VBox(new Label("Arrival Date"), arrivalDate), new VBox(new Label("Departure Time"), departureTime), new VBox(new Label("Arrival Time"), arrivalTime), new VBox(new Label("Ticket ID"), ticketID), new VBox(new Label("Ticket Price"), ticketPrice), updateFlight, backButton));
         return new Scene(root, 800, 800);

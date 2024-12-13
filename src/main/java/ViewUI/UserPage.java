@@ -82,7 +82,8 @@ public class UserPage extends Page {
         });
         VBox root = new VBox(5);
         root.setPadding(new Insets(10));
-        VBox innerContent = new VBox(text, welcome, new VBox(10, new VBox(new Label("Search for Flights"), searchFlights), flightListView, deleteFlight));
+        root.setStyle("-fx-background-color: #F0FFFF");
+        VBox innerContent = new VBox(text, welcome, new VBox(10, searchFlights), flightListView, deleteFlight);
         VBox vbox = new VBox(10);
         vbox.getChildren().addAll(innerContent, backButton);
 

@@ -36,6 +36,7 @@ public class LandingPage extends Page {
 
         VBox vbox = new VBox(50);
         vbox.setPadding(new Insets(10));
+        vbox.setStyle("-fx-background-color: #F0FFFF");
         HBox hbox = new HBox(10); // 10 pixels spacing between buttons
         Text header = new Text("✈️ Welcome to Flight Tracker ");
 

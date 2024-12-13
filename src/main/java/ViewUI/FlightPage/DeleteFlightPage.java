@@ -44,6 +44,7 @@ public class DeleteFlightPage extends Page {
             }
         });
         VBox root = new VBox(5);
+        root.setStyle("-fx-background-color: #F0FFFF");
         root.setPadding(new Insets(10));
         root.getChildren().addAll(text, new VBox(5, new VBox(new Label("Flight Number"), flightNumber), deleteFlight, backButton));
         return new Scene(root, 800, 800);
