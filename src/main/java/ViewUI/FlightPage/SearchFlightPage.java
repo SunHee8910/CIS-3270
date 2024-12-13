@@ -1,5 +1,6 @@
 package ViewUI.FlightPage;
 
+import Database.FlightDBQuery;
 import Database.myJDBC;
 import ViewUI.Page;
 import ViewUI.PageManager;
@@ -87,13 +88,21 @@ public class SearchFlightPage extends Page {
         bookButton.setOnAction(event -> {
             String selectedFlight = flightListView.getSelectionModel().getSelectedItem();
             if (selectedFlight != null) {
-                // Assuming you have a method to book the flight (e.g., storing it in a database or log
-                if (bookFlight(selectedFlight, username)) {
+                // Extract the ticketID from the selected flight details
+                String[] flightDetails = selectedFlight.split("\\|");
+                String ticketIDStr = flightDetails[0].replace("FlightID:", "").trim();
+                int ticketID = Integer.parseInt(ticketIDStr);
+
+                // Create a dummy flight object for booking
+                Flight flight = new Flight();
+                flight.setTicketID(ticketID);
+
+                if (FlightDBQuery.bookFlight(username, flight)) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Flight Booking");
-                    alert.setContentText("Your flight has been successfully booked");
+                    alert.setContentText("Your flight has been successfully booked. Remaining tickets updated.");
                     alert.showAndWait();
-                    this.pageManager.reload();
+                    this.pageManager.reload(); // Reload to reflect updated tickets remaining
                 } else {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Flight Booking");
@@ -102,6 +111,7 @@ public class SearchFlightPage extends Page {
                 }
             }
         });
+
 
         return new Scene(root, 800, 600);
     }
@@ -147,18 +157,12 @@ public class SearchFlightPage extends Page {
         String departureDate = datePicker.getValue() != null ? datePicker.getValue().toString() : "";
         String departureTime = departureTimeField.getText();
 
-        // Clear previous results
         flightListView.getItems().clear();
 
         try {
             Connection connection = myJDBC.getConnection();
             Statement statement = connection.createStatement();
-             StringBuilder query = new StringBuilder("SELECT distinct flights.* FROM flights WHERE 1=1 " +
-                    "and flights.ticketID not in (" +
-                    "select bookings.ticketID from bookings " +
-                    "join users on bookings.userID = users.userID " +
-                    "where lower(users.username) = lower('" + user.getUsername() + "')" +
-                    ")");
+            StringBuilder query = new StringBuilder("SELECT * FROM flights WHERE 1=1");
 
             if (!departureCity.isBlank()) {
                 query.append(" AND departureCity LIKE '%").append(departureCity).append("%'");
@@ -167,30 +171,37 @@ public class SearchFlightPage extends Page {
                 query.append(" AND arrivalCity LIKE '%").append(destinationCity).append("%'");
             }
             if (!departureDate.isBlank()) {
-                query.append(" AND departureDate LIKE '%").append(departureDate).append("%'");
+                query.append(" AND departureDate = '").append(departureDate).append("'");
             }
             if (!departureTime.isBlank()) {
-                query.append(" AND departureTime LIKE '%").append(departureTime).append("%'");
+                query.append(" AND departureTime = '").append(departureTime).append("'");
             }
 
             ResultSet resultSet = statement.executeQuery(query.toString());
 
             while (resultSet.next()) {
-                String flightDetails ="FlightID: " + resultSet.getString("ticketID") + "  Departure City: " + resultSet.getString("departureCity") +
-                        ", Arrival City: " + resultSet.getString("arrivalCity") +
-                        ", Departure Date: " + resultSet.getString("departureDate") +
-                        ", Departure Time: " + resultSet.getString("departureTime");
+                int ticketID = resultSet.getInt("ticketID");
+                int ticketsRemaining = FlightDBQuery.getTicketsRemaining(ticketID); // Fetch tickets remaining
+                String flightDetails = String.format(
+                        "FlightID: %d | From: %s | To: %s | Date: %s | Time: %s | Tickets Remaining: %d",
+                        ticketID,
+                        resultSet.getString("departureCity"),
+                        resultSet.getString("arrivalCity"),
+                        resultSet.getString("departureDate"),
+                        resultSet.getString("departureTime"),
+                        ticketsRemaining
+                );
                 flightListView.getItems().add(flightDetails);
             }
 
             if (flightListView.getItems().isEmpty()) {
                 flightListView.getItems().add("No flights found");
             }
-
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
+
 
     private boolean bookFlight(String selectedFlight, String username) {
         try{

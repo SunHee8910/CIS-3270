@@ -60,19 +60,47 @@ public class FlightDBQuery {
 
     // Delete a flight from a user's account
     public static boolean deleteFlight(int bookingID) {
-        try {
-            int rowsAffected = myJDBC.getConnection().createStatement().executeUpdate(
-                    String.format("delete from bookings where bookingID = '%d'", bookingID));
+        try (Connection connection = myJDBC.getConnection()) {
+            connection.setAutoCommit(false); // Start transaction
 
-            if (rowsAffected > 0) {
-                System.out.printf("Flight with booking ID %s deleted\n", bookingID);
-            } else {
-                System.out.printf("Flight with booking ID %s not deleted\n", bookingID);
+            // Get the ticketID from the booking
+            String getTicketIDSql = "SELECT ticketID FROM bookings WHERE bookingID = ?";
+            int ticketID = -1;
+            try (PreparedStatement getTicketStmt = connection.prepareStatement(getTicketIDSql)) {
+                getTicketStmt.setInt(1, bookingID);
+                ResultSet resultSet = getTicketStmt.executeQuery();
+                if (resultSet.next()) {
+                    ticketID = resultSet.getInt("ticketID");
+                } else {
+                    System.out.println("Booking not found.");
+                    return false;
+                }
             }
 
-            return rowsAffected > 0;
+            // Delete the booking
+            String deleteBookingSql = "DELETE FROM bookings WHERE bookingID = ?";
+            try (PreparedStatement deleteBookingStmt = connection.prepareStatement(deleteBookingSql)) {
+                deleteBookingStmt.setInt(1, bookingID);
+                int rowsAffected = deleteBookingStmt.executeUpdate();
+                if (rowsAffected == 0) {
+                    System.out.println("Failed to delete booking.");
+                    return false;
+                }
+            }
+
+            // Increase the tickets remaining for the associated flight
+            String updateCapacitySql = "UPDATE flights SET ticketsRemaining = ticketsRemaining + 1 WHERE ticketID = ?";
+            try (PreparedStatement updateCapacityStmt = connection.prepareStatement(updateCapacitySql)) {
+                updateCapacityStmt.setInt(1, ticketID);
+                updateCapacityStmt.executeUpdate();
+            }
+
+            connection.commit(); // Commit transaction
+            System.out.printf("Flight booking with ID %d deleted and tickets remaining updated.%n", bookingID);
+            return true;
+
         } catch (Exception e) {
-            System.err.println("Error deleting flight: " + e.getMessage());
+            System.err.println("Error deleting flight booking: " + e.getMessage());
             return false;
         }
     }
@@ -170,10 +198,9 @@ public class FlightDBQuery {
     }
 
 
-    public boolean bookFlight(String username, Flight flight) {
+    public static boolean bookFlight(String username, Flight flight) {
         try (Connection connection = myJDBC.getConnection()) {
-
-            // Get the userid from username
+            // Get the userID from username
             String getUserIDSql = "SELECT userID FROM users WHERE username = ?";
             try (PreparedStatement userStmt = connection.prepareStatement(getUserIDSql)) {
                 userStmt.setString(1, username);
@@ -186,7 +213,7 @@ public class FlightDBQuery {
 
                 int userID = userResult.getInt("userID");
 
-                //Check flight capacity
+                // Check flight capacity
                 String capacityCheckSql = "SELECT ticketsRemaining FROM flights WHERE ticketID = ?";
                 try (PreparedStatement capacityStmt = connection.prepareStatement(capacityCheckSql)) {
                     capacityStmt.setInt(1, flight.getTicketID());
@@ -218,7 +245,7 @@ public class FlightDBQuery {
                     }
                 }
 
-                //Insert booking and update flight capacity
+                // Insert booking and update flight capacity
                 connection.setAutoCommit(false); // Start transaction
 
                 String bookFlightSql = "INSERT INTO bookings (userID, ticketID) VALUES (?, ?)";
@@ -247,6 +274,22 @@ public class FlightDBQuery {
             System.err.println("Error booking flight: " + e.getMessage());
             return false;
         }
+    }
+
+
+
+    public static int getTicketsRemaining(int ticketID) {
+        try (Connection connection = myJDBC.getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT ticketsRemaining FROM flights WHERE ticketID = ?")) {
+            statement.setInt(1, ticketID);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt("ticketsRemaining");
+            }
+        } catch (Exception e) {
+            System.out.println("Error retrieving tickets remaining: " + e.getMessage());
+        }
+        return -1; // Return -1 if an error occurs
     }
 
 

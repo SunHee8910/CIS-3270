@@ -1,5 +1,6 @@
 package ViewUI;
 
+import Database.FlightDBQuery;
 import Database.myJDBC;
 import ViewUI.Page;
 import ViewUI.PageManager;
@@ -74,12 +75,13 @@ public class UserPage extends Page {
             Optional<ButtonType> confirmed = deleteAlert.showAndWait();
             if (confirmed.get() == ButtonType.OK) {
                 UserFlight selectedFlight = flights.get(flightListView.getSelectionModel().getSelectedIndex());
-                boolean isSuccessful = deleteFlight(selectedFlight.getBookingID());
+                boolean isSuccessful = FlightDBQuery.deleteFlight(selectedFlight.getBookingID());
                 if (isSuccessful) {
-                    this.pageManager.reload();
+                    this.pageManager.reload(); // Reload UI to reflect changes
                 }
             }
         });
+
         VBox root = new VBox(5);
         root.setPadding(new Insets(10));
         root.setStyle("-fx-background-color: #F0FFFF");
