@@ -88,7 +88,7 @@ public class UserPage extends Page {
         });
         VBox root = new VBox(5);
         root.setPadding(new Insets(10));
-        root.getChildren().addAll(text, welcome, new VBox(10, new VBox(new Label("Search for Flights"), searchFlights), flightListView, backButton));
+        root.getChildren().addAll(text, welcome, new VBox(10,  searchFlights), flightListView, backButton);
 
         ScrollPane scroll = new ScrollPane(root);
         scroll.setFitToHeight(true);
