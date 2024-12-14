@@ -30,8 +30,10 @@ import org.example.Flight;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 import static CodingLogicPackage.CodingLogic.generateFlightID;
+import static Database.FlightDBQuery.getConflictingFlights;
 import static ViewUI.PageManager.USER_PAGE;
 
 public class SearchFlightPage extends Page {
@@ -97,7 +99,14 @@ public class SearchFlightPage extends Page {
                 Flight flight = new Flight();
                 flight.setTicketID(ticketID);
 
-                if (FlightDBQuery.bookFlight(username, flight)) {
+                String conflictingFlights = getConflictingFlights(ticketID, this.user.getUsername());
+
+                if (!conflictingFlights.isEmpty()) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Flight Conflict");
+                    alert.setContentText(conflictingFlights);
+                    alert.show();
+                } else if (FlightDBQuery.bookFlight(username, flight)) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Flight Booking");
                     alert.setContentText("Your flight has been successfully booked. Remaining tickets updated.");
@@ -204,7 +213,7 @@ public class SearchFlightPage extends Page {
 
 
     private boolean bookFlight(String selectedFlight, String username) {
-        try{
+        try {
             Connection connection = myJDBC.getConnection();
             Statement statement = connection.createStatement();
             String[] flightDetails = selectedFlight.split(" ");
@@ -221,8 +230,7 @@ public class SearchFlightPage extends Page {
                         return true;
                     }
                 }
-            }
-                else {
+            } else {
                 return false;
             }
         } catch (Exception e) {

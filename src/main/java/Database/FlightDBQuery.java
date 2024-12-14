@@ -2,6 +2,7 @@ package Database;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.example.Flight;
@@ -23,18 +24,7 @@ public class FlightDBQuery {
             connection = getConnection();
 
             // Construct the SQL query using getters from the Flight object
-            String sql = "INSERT INTO Flights " +
-                    "(ticketID, departureCity, arrivalCity, departureDate, arrivalDate, departureTime, arrivalTime, ticketsRemaining, purchasedTicket) " +
-                    "VALUES (" +
-                    "'" + flight.getTicketID() + "', " +
-                    "'" + flight.getDepartureCity() + "', " +
-                    "'" + flight.getArrivalCity() + "', " +
-                    "'" + flight.getDepartureDate() + "', " +
-                    "'" + flight.getArrivalDate() + "', " +
-                    "'" + flight.departureTime + "', " +
-                    "'" + flight.getArrivalTime() + "', " +
-                    flight.getTicketsRemaining() + ", " +
-                    flight.hasPurchasedTicket() + ")";
+            String sql = "INSERT INTO Flights " + "(ticketID, departureCity, arrivalCity, departureDate, arrivalDate, departureTime, arrivalTime, ticketsRemaining, purchasedTicket) " + "VALUES (" + "'" + flight.getTicketID() + "', " + "'" + flight.getDepartureCity() + "', " + "'" + flight.getArrivalCity() + "', " + "'" + flight.getDepartureDate() + "', " + "'" + flight.getArrivalDate() + "', " + "'" + flight.departureTime + "', " + "'" + flight.getArrivalTime() + "', " + flight.getTicketsRemaining() + ", " + flight.hasPurchasedTicket() + ")";
 
             // Create and execute the statement
             statement = connection.createStatement();
@@ -107,11 +97,7 @@ public class FlightDBQuery {
 
     public static ArrayList<UserFlight> getUserFlights(String username) {
         try {
-            ResultSet results = myJDBC.getConnection().createStatement().executeQuery(
-                    "SELECT bookings.bookingID, bookings.ticketID, flights.departureCity, flights.arrivalCity, flights.departureTime, flights.arrivalTime, flights.departureDate, flights.arrivalDate " +
-                            "FROM bookings JOIN flights ON bookings.ticketID = flights.ticketID " +
-                            "JOIN users ON bookings.userID = users.userID " +
-                            "WHERE users.username = '" + username + "'");
+            ResultSet results = myJDBC.getConnection().createStatement().executeQuery("SELECT bookings.bookingID, bookings.ticketID, flights.departureCity, flights.arrivalCity, flights.departureTime, flights.arrivalTime, flights.departureDate, flights.arrivalDate " + "FROM bookings JOIN flights ON bookings.ticketID = flights.ticketID " + "JOIN users ON bookings.userID = users.userID " + "WHERE users.username = '" + username + "'");
 
             ArrayList<UserFlight> result = new ArrayList<>();
 
@@ -123,9 +109,7 @@ public class FlightDBQuery {
                 String arrivalTime = results.getString("arrivalTime");
                 String departureDate = results.getString("departureDate");
                 String arrivalDate = results.getString("arrivalDate");
-                Flight flight = new Flight(
-                        departureCity, arrivalCity, departureDate, arrivalDate, departureTime, arrivalTime, ticketID
-                );
+                Flight flight = new Flight(departureCity, arrivalCity, departureDate, arrivalDate, departureTime, arrivalTime, ticketID);
                 int bookingID = results.getInt("bookingID");
                 UserFlight userFlight = new UserFlight(bookingID, username, flight);
                 result.add(userFlight);
@@ -165,12 +149,8 @@ public class FlightDBQuery {
 
 
     private boolean hasTimeConflict(int userID, Flight newFlight) {
-        String query = "SELECT flights.arrivalDate, flights.arrivalTime, flights.arrivalCity " +
-                "FROM flights " +
-                "JOIN bookings ON flights.ticketID = bookings.ticketID " +
-                "WHERE bookings.userID = ?";
-        try (Connection connection = myJDBC.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        String query = "SELECT flights.arrivalDate, flights.arrivalTime, flights.arrivalCity " + "FROM flights " + "JOIN bookings ON flights.ticketID = bookings.ticketID " + "WHERE bookings.userID = ?";
+        try (Connection connection = myJDBC.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setInt(1, userID);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -183,8 +163,7 @@ public class FlightDBQuery {
                 // Ensure the arrival city and new flight's departure city are different
                 if (bookedArrivalCity.equals(newFlight.getDepartureCity())) {
 
-                    if (bookedArrivalDate.equals(newFlight.getDepartureDate()) &&
-                            !isTimeAvailable(bookedArrivalTime, newFlight.getDepartureTime())) {
+                    if (bookedArrivalDate.equals(newFlight.getDepartureDate()) && !isTimeAvailable(bookedArrivalTime, newFlight.getDepartureTime())) {
                         return true; // Conflict detected
                     }
                 }
@@ -277,10 +256,8 @@ public class FlightDBQuery {
     }
 
 
-
     public static int getTicketsRemaining(int ticketID) {
-        try (Connection connection = myJDBC.getConnection();
-             PreparedStatement statement = connection.prepareStatement("SELECT ticketsRemaining FROM flights WHERE ticketID = ?")) {
+        try (Connection connection = myJDBC.getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT ticketsRemaining FROM flights WHERE ticketID = ?")) {
             statement.setInt(1, ticketID);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -290,6 +267,32 @@ public class FlightDBQuery {
             System.out.println("Error retrieving tickets remaining: " + e.getMessage());
         }
         return -1; // Return -1 if an error occurs
+    }
+
+    public static String getConflictingFlights(int ticketID, String username) {
+        ArrayList<String> conflictingFlights = new ArrayList<>();
+        try {
+            ResultSet results = myJDBC.getConnection().createStatement().executeQuery(String.format(
+                    "SELECT bookings.bookingID, booked_flight.departureCity, booked_flight.arrivalCity FROM bookings\n" +
+                            "\tJOIN users ON users.userID = bookings.userID\n" +
+                            "\tJOIN flights selected_flight ON selected_flight.ticketID = %d\n" +
+                            "\tJOIN flights booked_flight ON booked_flight.ticketID = bookings.ticketID\n" +
+                            "WHERE\n" +
+                            "\tlower(users.username) = lower('%s')\n" +
+                            "\tand (timestamp(convert(selected_flight.departureDate, DATE), convert(selected_flight.departureTime, TIME)) BETWEEN timestamp(convert(booked_flight.departureDate, DATE), convert(booked_flight.departureTime, TIME)) AND timestamp(convert(booked_flight.arrivalDate, DATE), convert(booked_flight.arrivalTime, TIME))\n" +
+                            "\tOR timestamp(convert(selected_flight.arrivalDate, DATE), convert(selected_flight.arrivalTime, TIME)) BETWEEN timestamp(convert(booked_flight.departureDate, DATE), convert(booked_flight.departureTime, TIME)) AND timestamp(convert(booked_flight.arrivalDate, DATE), convert(booked_flight.arrivalTime, TIME)))",
+                     ticketID, username));
+
+            while (results.next()) {
+                conflictingFlights.add(String.format("The flight you are trying to book conflicts with a flight you already have booked, booking ID %d, from %s to %s", results.getInt("bookingID"), results.getString("departureCity"), results.getString("arrivalCity")));
+            }
+
+            return String.join("\n", conflictingFlights);
+        } catch (Exception e) {
+            System.out.printf("Error when searching for conflicting flights: %s\n", e.getMessage() );
+            return String.join("\n", conflictingFlights);
+        }
+
     }
 
 
@@ -307,14 +310,7 @@ public class FlightDBQuery {
 
             while (resultSet.next()) {
                 int ticketID = resultSet.getInt("ticketID");
-                Flight flight = new Flight(
-                        resultSet.getString("departureCity"),
-                        resultSet.getString("arrivalCity"),
-                        resultSet.getString("departureDate"),
-                        resultSet.getString("arrivalDate"),
-                        resultSet.getString("departureTime"),
-                        resultSet.getString("arrivalTime")
-                );
+                Flight flight = new Flight(resultSet.getString("departureCity"), resultSet.getString("arrivalCity"), resultSet.getString("departureDate"), resultSet.getString("arrivalDate"), resultSet.getString("departureTime"), resultSet.getString("arrivalTime"));
                 flight.setTicketsRemaining(resultSet.getInt("ticketsRemaining"));
                 bookedFlights.put(ticketID, flight);
             }
@@ -334,25 +330,12 @@ public class FlightDBQuery {
     // Search for flights based on criteria
     public HashMap<String, Flight> searchFlights(String departureCity, String arrivalCity, String departureDate, String departureTime) {
         HashMap<String, Flight> flights = new HashMap<>();
-        String sql = "SELECT * FROM Flights WHERE " +
-                "(departureCity = '" + departureCity + "' OR '" + departureCity + "' IS NULL OR departureCity IS NULL) AND " +
-                "(arrivalCity = '" + arrivalCity + "' OR '" + arrivalCity + "' IS NULL OR arrivalCity IS NULL) AND " +
-                "(departureDate = '" + departureDate + "' OR '" + departureDate + "' IS NULL OR departureDate IS NULL) AND " +
-                "(departureTime = '" + departureTime + "' OR '" + departureTime + "' IS NULL OR departureTime IS NULL)";
+        String sql = "SELECT * FROM Flights WHERE " + "(departureCity = '" + departureCity + "' OR '" + departureCity + "' IS NULL OR departureCity IS NULL) AND " + "(arrivalCity = '" + arrivalCity + "' OR '" + arrivalCity + "' IS NULL OR arrivalCity IS NULL) AND " + "(departureDate = '" + departureDate + "' OR '" + departureDate + "' IS NULL OR departureDate IS NULL) AND " + "(departureTime = '" + departureTime + "' OR '" + departureTime + "' IS NULL OR departureTime IS NULL)";
 
-        try (Connection connection = myJDBC.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(sql)) {
+        try (Connection connection = myJDBC.getConnection(); Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sql)) {
 
             while (resultSet.next()) {
-                Flight flight = new Flight(
-                        resultSet.getString("departureCity"),
-                        resultSet.getString("arrivalCity"),
-                        resultSet.getString("departureDate"),
-                        resultSet.getString("arrivalDate"),
-                        resultSet.getString("departureTime"),
-                        resultSet.getString("arrivalTime")
-                );
+                Flight flight = new Flight(resultSet.getString("departureCity"), resultSet.getString("arrivalCity"), resultSet.getString("departureDate"), resultSet.getString("arrivalDate"), resultSet.getString("departureTime"), resultSet.getString("arrivalTime"));
                 flights.put(resultSet.getString("ticketID"), flight); // Use ticketID as the key
             }
 
@@ -362,8 +345,7 @@ public class FlightDBQuery {
                 System.out.println("Flights found:");
                 for (String ticketID : flights.keySet()) {
                     Flight f = flights.get(ticketID);
-                    System.out.printf("ID: %s | From: %s | To: %s | Date: %s | Time: %s\n",
-                            ticketID, f.getDepartureCity(), f.getArrivalCity(), f.getDepartureDate(), f.departureTime);
+                    System.out.printf("ID: %s | From: %s | To: %s | Date: %s | Time: %s\n", ticketID, f.getDepartureCity(), f.getArrivalCity(), f.getDepartureDate(), f.departureTime);
                 }
             }
 
